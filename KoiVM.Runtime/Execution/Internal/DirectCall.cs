@@ -12,7 +12,7 @@ namespace KoiVM.Runtime.Execution.Internal
 {
     internal static class DirectCall
     {
-        public delegate object TypedInvocation(DarksVMContext ctx, IReference[] refs, Type[] types);
+        public delegate object TypedInvocation(NeonVMContext ctx, IReference[] refs, Type[] types);
 
         private static readonly Hashtable directProxies = new Hashtable();
         private static readonly Hashtable typedProxies = new Hashtable();
@@ -156,7 +156,7 @@ namespace KoiVM.Runtime.Execution.Internal
                 var retType = method is MethodInfo ? ((MethodInfo) method).ReturnType : typeof(void);
                 if(opCode == System.Reflection.Emit.OpCodes.Newobj)
                     retType = method.DeclaringType;
-                var dm = new DynamicMethod("", typeof(object), new[] {typeof(DarksVMContext), typeof(IReference[]), typeof(Type[])},
+                var dm = new DynamicMethod("", typeof(object), new[] {typeof(NeonVMContext), typeof(IReference[]), typeof(Type[])},
                     Unverifier.Module, true);
                 var gen = dm.GetILGenerator();
 

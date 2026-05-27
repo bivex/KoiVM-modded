@@ -3,7 +3,7 @@
 
 using namespace System;
 
-// Маркировка метода для виртуализации DarksVM
+// Маркировка метода для виртуализации NeonVM
 [System::Reflection::Obfuscation(Exclude = false, Feature = "+virt")]
 public ref class TestLogic {
 public:

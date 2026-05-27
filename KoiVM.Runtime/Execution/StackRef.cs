@@ -20,7 +20,7 @@ namespace KoiVM.Runtime.Execution
             set;
         }
 
-        public DarksVMSlot GetValue(DarksVMContext ctx, PointerType type)
+        public NeonVMSlot GetValue(NeonVMContext ctx, PointerType type)
         {
             var slot = ctx.Stack[StackPos];
             if(type == PointerType.BYTE)
@@ -33,7 +33,7 @@ namespace KoiVM.Runtime.Execution
             return slot;
         }
 
-        public void SetValue(DarksVMContext ctx, DarksVMSlot slot, PointerType type)
+        public void SetValue(NeonVMContext ctx, NeonVMSlot slot, PointerType type)
         {
             if(type == PointerType.BYTE)
                 slot.U8 = slot.U1;
@@ -54,7 +54,7 @@ namespace KoiVM.Runtime.Execution
             return new StackRef(StackPos + (uint) (long) value);
         }
 
-        public void ToTypedReference(DarksVMContext ctx, TypedRefPtr typedRef, Type type)
+        public void ToTypedReference(NeonVMContext ctx, TypedRefPtr typedRef, Type type)
         {
             ctx.Stack.ToTypedReference(StackPos, typedRef, type);
         }

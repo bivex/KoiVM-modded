@@ -29,7 +29,7 @@ namespace KoiVM.VMIR
                 }
         }
 
-        public IRTranslator(IRContext ctx, DarksVMRuntime runtime)
+        public IRTranslator(IRContext ctx, NeonVMRuntime runtime)
         {
             Context = ctx;
             Runtime = runtime;
@@ -46,7 +46,7 @@ namespace KoiVM.VMIR
             get;
         }
 
-        public DarksVMRuntime Runtime
+        public NeonVMRuntime Runtime
         {
             get;
         }

@@ -19,15 +19,15 @@ namespace KoiVM.Runtime.Execution
             this.field = field;
         }
 
-        public DarksVMSlot GetValue(DarksVMContext ctx, PointerType type)
+        public NeonVMSlot GetValue(NeonVMContext ctx, PointerType type)
         {
             var inst = instance;
             if(field.DeclaringType.IsValueType && instance is IReference)
                 inst = ((IReference) instance).GetValue(ctx, PointerType.OBJECT).ToObject(field.DeclaringType);
-            return DarksVMSlot.FromObject(field.GetValue(inst), field.FieldType);
+            return NeonVMSlot.FromObject(field.GetValue(inst), field.FieldType);
         }
 
-        public unsafe void SetValue(DarksVMContext ctx, DarksVMSlot slot, PointerType type)
+        public unsafe void SetValue(NeonVMContext ctx, NeonVMSlot slot, PointerType type)
         {
             if(field.DeclaringType.IsValueType && instance is IReference)
             {
@@ -51,7 +51,7 @@ namespace KoiVM.Runtime.Execution
             return this;
         }
 
-        public void ToTypedReference(DarksVMContext ctx, TypedRefPtr typedRef, Type type)
+        public void ToTypedReference(NeonVMContext ctx, TypedRefPtr typedRef, Type type)
         {
             TypedReferenceHelpers.GetFieldAddr(ctx, instance, field, typedRef);
         }

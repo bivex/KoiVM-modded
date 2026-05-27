@@ -10,11 +10,11 @@ namespace KoiVM.Runtime.OpCodes
 {
     internal class Leave : IOpCode
     {
-        public byte Code => DarksVMConstants.OP_LEAVE;
+        public byte Code => NeonVMConstants.OP_LEAVE;
 
-        public void Load(DarksVMContext ctx, out ExecutionState state)
+        public void Load(NeonVMContext ctx, out ExecutionState state)
         {
-            var sp = ctx.Registers[DarksVMConstants.REG_SP].U4;
+            var sp = ctx.Registers[NeonVMConstants.REG_SP].U4;
             var handler = ctx.Stack[sp--].U8;
 
             var frameIndex = ctx.EHStack.Count - 1;
@@ -24,15 +24,15 @@ namespace KoiVM.Runtime.OpCodes
                 throw new InvalidProgramException();
             ctx.EHStack.RemoveAt(frameIndex);
 
-            if(frame.EHType == DarksVMConstants.EH_FINALLY)
+            if(frame.EHType == NeonVMConstants.EH_FINALLY)
             {
-                ctx.Stack[++sp] = ctx.Registers[DarksVMConstants.REG_IP];
-                ctx.Registers[DarksVMConstants.REG_K1].U1 = 0;
-                ctx.Registers[DarksVMConstants.REG_IP].U8 = frame.HandlerAddr;
+                ctx.Stack[++sp] = ctx.Registers[NeonVMConstants.REG_IP];
+                ctx.Registers[NeonVMConstants.REG_K1].U1 = 0;
+                ctx.Registers[NeonVMConstants.REG_IP].U8 = frame.HandlerAddr;
             }
 
             ctx.Stack.SetTopPosition(sp);
-            ctx.Registers[DarksVMConstants.REG_SP].U4 = sp;
+            ctx.Registers[NeonVMConstants.REG_SP].U4 = sp;
 
             state = ExecutionState.Next;
         }

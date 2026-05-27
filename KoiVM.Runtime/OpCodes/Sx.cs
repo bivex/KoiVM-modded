@@ -9,11 +9,11 @@ namespace KoiVM.Runtime.OpCodes
 {
     internal class SxDword : IOpCode
     {
-        public byte Code => DarksVMConstants.OP_SX_DWORD;
+        public byte Code => NeonVMConstants.OP_SX_DWORD;
 
-        public void Load(DarksVMContext ctx, out ExecutionState state)
+        public void Load(NeonVMContext ctx, out ExecutionState state)
         {
-            var sp = ctx.Registers[DarksVMConstants.REG_SP].U4;
+            var sp = ctx.Registers[NeonVMConstants.REG_SP].U4;
             var operand = ctx.Stack[sp];
             if((operand.U4 & 0x80000000) != 0)
                 operand.U8 = 0xffffffff00000000 | operand.U4;
@@ -25,11 +25,11 @@ namespace KoiVM.Runtime.OpCodes
 
     internal class SxWord : IOpCode
     {
-        public byte Code => DarksVMConstants.OP_SX_WORD;
+        public byte Code => NeonVMConstants.OP_SX_WORD;
 
-        public void Load(DarksVMContext ctx, out ExecutionState state)
+        public void Load(NeonVMContext ctx, out ExecutionState state)
         {
-            var sp = ctx.Registers[DarksVMConstants.REG_SP].U4;
+            var sp = ctx.Registers[NeonVMConstants.REG_SP].U4;
             var operand = ctx.Stack[sp];
             if((operand.U2 & 0x8000) != 0)
                 operand.U4 = operand.U2 | 0xffff0000;
@@ -41,11 +41,11 @@ namespace KoiVM.Runtime.OpCodes
 
     internal class SxByte : IOpCode
     {
-        public byte Code => DarksVMConstants.OP_SX_BYTE;
+        public byte Code => NeonVMConstants.OP_SX_BYTE;
 
-        public void Load(DarksVMContext ctx, out ExecutionState state)
+        public void Load(NeonVMContext ctx, out ExecutionState state)
         {
-            var sp = ctx.Registers[DarksVMConstants.REG_SP].U4;
+            var sp = ctx.Registers[NeonVMConstants.REG_SP].U4;
             var operand = ctx.Stack[sp];
             if((operand.U1 & 0x80) != 0)
                 operand.U4 = operand.U1 | 0xffffff00;

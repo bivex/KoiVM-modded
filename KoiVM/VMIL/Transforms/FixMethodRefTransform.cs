@@ -10,7 +10,7 @@ namespace KoiVM.VMIL.Transforms
 {
     public class FixMethodRefTransform : IPostTransform
     {
-        private HashSet<DarksVMRegisters> saveRegs;
+        private HashSet<NeonVMRegisters> saveRegs;
 
         public void Initialize(ILPostTransformer tr)
         {

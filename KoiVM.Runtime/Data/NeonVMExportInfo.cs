@@ -6,9 +6,9 @@ using System.Reflection;
 
 namespace KoiVM.Runtime.Data
 {
-    internal struct DarksVMExportInfo
+    internal struct NeonVMExportInfo
     {
-        public unsafe DarksVMExportInfo(ref byte* ptr, Module module)
+        public unsafe NeonVMExportInfo(ref byte* ptr, Module module)
         {
             CodeOffset = *(uint*) ptr;
             ptr += 4;
@@ -21,11 +21,11 @@ namespace KoiVM.Runtime.Data
             {
                 EntryKey = 0;
             }
-            Signature = new DarksVMFuncSig(ref ptr, module);
+            Signature = new NeonVMFuncSig(ref ptr, module);
         }
 
         public readonly uint CodeOffset;
         public readonly uint EntryKey;
-        public readonly DarksVMFuncSig Signature;
+        public readonly NeonVMFuncSig Signature;
     }
 }

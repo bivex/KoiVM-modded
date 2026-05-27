@@ -14,19 +14,19 @@ namespace KoiVM.Runtime.VCalls
 {
     internal unsafe class Ecall : IVCall
     {
-        public byte Code => DarksVMConstants.VCALL_ECALL;
+        public byte Code => NeonVMConstants.VCALL_ECALL;
 
-        public void Load(DarksVMContext ctx, out ExecutionState state)
+        public void Load(NeonVMContext ctx, out ExecutionState state)
         {
-            var sp = ctx.Registers[DarksVMConstants.REG_SP].U4;
+            var sp = ctx.Registers[NeonVMConstants.REG_SP].U4;
             var mSlot = ctx.Stack[sp--];
 
             var mId = mSlot.U4 & 0x3fffffff;
             var opCode = (byte) (mSlot.U4 >> 30);
             var targetMethod = (MethodBase) ctx.Instance.Data.LookupReference(mId);
-            var typedInvoke = opCode == DarksVMConstants.ECALL_CALLVIRT_CONSTRAINED;
+            var typedInvoke = opCode == NeonVMConstants.ECALL_CALLVIRT_CONSTRAINED;
             if(!typedInvoke)
-                typedInvoke = NeedTypedInvoke(ctx, sp, targetMethod, opCode == DarksVMConstants.ECALL_NEWOBJ);
+                typedInvoke = NeedTypedInvoke(ctx, sp, targetMethod, opCode == NeonVMConstants.ECALL_NEWOBJ);
 
             if(typedInvoke)
                 InvokeTyped(ctx, targetMethod, opCode, ref sp, out state);
@@ -34,7 +34,7 @@ namespace KoiVM.Runtime.VCalls
                 InvokeNormal(ctx, targetMethod, opCode, ref sp, out state);
         }
 
-        private static object PopObject(DarksVMContext ctx, Type type, ref uint sp)
+        private static object PopObject(NeonVMContext ctx, Type type, ref uint sp)
         {
             var arg = ctx.Stack[sp--];
             if(Type.GetTypeCode(type) == TypeCode.String && arg.O == null)
@@ -42,7 +42,7 @@ namespace KoiVM.Runtime.VCalls
             return arg.ToObject(type);
         }
 
-        private static IReference PopRef(DarksVMContext ctx, Type type, ref uint sp)
+        private static IReference PopRef(NeonVMContext ctx, Type type, ref uint sp)
         {
             var arg = ctx.Stack[sp];
 
@@ -66,7 +66,7 @@ namespace KoiVM.Runtime.VCalls
             return new StackRef(sp--);
         }
 
-        private static bool NeedTypedInvoke(DarksVMContext ctx, uint sp, MethodBase method, bool isNewObj)
+        private static bool NeedTypedInvoke(NeonVMContext ctx, uint sp, MethodBase method, bool isNewObj)
         {
             if(!isNewObj && !method.IsStatic)
                 if(method.DeclaringType.IsValueType)
@@ -79,13 +79,13 @@ namespace KoiVM.Runtime.VCalls
             return false;
         }
 
-        private void InvokeNormal(DarksVMContext ctx, MethodBase targetMethod, byte opCode, ref uint sp, out ExecutionState state)
+        private void InvokeNormal(NeonVMContext ctx, MethodBase targetMethod, byte opCode, ref uint sp, out ExecutionState state)
         {
             var _sp = sp;
             var parameters = targetMethod.GetParameters();
             object self = null;
             var args = new object[parameters.Length];
-            if(opCode == DarksVMConstants.ECALL_CALL && targetMethod.IsVirtual)
+            if(opCode == NeonVMConstants.ECALL_CALL && targetMethod.IsVirtual)
             {
                 var indexOffset = targetMethod.IsStatic ? 0 : 1;
                 args = new object[parameters.Length + indexOffset];
@@ -101,7 +101,7 @@ namespace KoiVM.Runtime.VCalls
                 args = new object[parameters.Length];
                 for(var i = parameters.Length - 1; i >= 0; i--)
                     args[i] = PopObject(ctx, parameters[i].ParameterType, ref sp);
-                if(!targetMethod.IsStatic && opCode != DarksVMConstants.ECALL_NEWOBJ)
+                if(!targetMethod.IsStatic && opCode != NeonVMConstants.ECALL_NEWOBJ)
                 {
                     self = PopObject(ctx, targetMethod.DeclaringType, ref sp);
 
@@ -116,7 +116,7 @@ namespace KoiVM.Runtime.VCalls
             }
 
             object result;
-            if(opCode == DarksVMConstants.ECALL_NEWOBJ)
+            if(opCode == NeonVMConstants.ECALL_NEWOBJ)
             {
                 try
                 {
@@ -152,37 +152,37 @@ namespace KoiVM.Runtime.VCalls
                     }
                     catch(TargetInvocationException ex)
                     {
-                        DarksVMDispatcher.DoThrow(ctx, ex.InnerException);
+                        NeonVMDispatcher.DoThrow(ctx, ex.InnerException);
                         throw;
                     }
                 }
             }
 
-            if(targetMethod is MethodInfo && ((MethodInfo) targetMethod).ReturnType != typeof(void)) ctx.Stack[++sp] = DarksVMSlot.FromObject(result, ((MethodInfo) targetMethod).ReturnType);
-            else if(opCode == DarksVMConstants.ECALL_NEWOBJ) ctx.Stack[++sp] = DarksVMSlot.FromObject(result, targetMethod.DeclaringType);
+            if(targetMethod is MethodInfo && ((MethodInfo) targetMethod).ReturnType != typeof(void)) ctx.Stack[++sp] = NeonVMSlot.FromObject(result, ((MethodInfo) targetMethod).ReturnType);
+            else if(opCode == NeonVMConstants.ECALL_NEWOBJ) ctx.Stack[++sp] = NeonVMSlot.FromObject(result, targetMethod.DeclaringType);
 
             ctx.Stack.SetTopPosition(sp);
-            ctx.Registers[DarksVMConstants.REG_SP].U4 = sp;
+            ctx.Registers[NeonVMConstants.REG_SP].U4 = sp;
             state = ExecutionState.Next;
         }
 
-        private void InvokeTyped(DarksVMContext ctx, MethodBase targetMethod, byte opCode, ref uint sp, out ExecutionState state)
+        private void InvokeTyped(NeonVMContext ctx, MethodBase targetMethod, byte opCode, ref uint sp, out ExecutionState state)
         {
             var parameters = targetMethod.GetParameters();
             var paramCount = parameters.Length;
-            if(!targetMethod.IsStatic && opCode != DarksVMConstants.ECALL_NEWOBJ)
+            if(!targetMethod.IsStatic && opCode != NeonVMConstants.ECALL_NEWOBJ)
                 paramCount++;
 
             Type constrainType = null;
-            if(opCode == DarksVMConstants.ECALL_CALLVIRT_CONSTRAINED) constrainType = (Type) ctx.Instance.Data.LookupReference(ctx.Stack[sp--].U4);
+            if(opCode == NeonVMConstants.ECALL_CALLVIRT_CONSTRAINED) constrainType = (Type) ctx.Instance.Data.LookupReference(ctx.Stack[sp--].U4);
 
-            var indexOffset = targetMethod.IsStatic || opCode == DarksVMConstants.ECALL_NEWOBJ ? 0 : 1;
+            var indexOffset = targetMethod.IsStatic || opCode == NeonVMConstants.ECALL_NEWOBJ ? 0 : 1;
             var references = new IReference[paramCount];
             var types = new Type[paramCount];
             for(var i = paramCount - 1; i >= 0; i--)
             {
                 Type paramType;
-                if(!targetMethod.IsStatic && opCode != DarksVMConstants.ECALL_NEWOBJ)
+                if(!targetMethod.IsStatic && opCode != NeonVMConstants.ECALL_NEWOBJ)
                     if(i == 0)
                     {
                         if(!targetMethod.IsStatic)
@@ -191,7 +191,7 @@ namespace KoiVM.Runtime.VCalls
                             if(thisSlot.O is ValueType && !targetMethod.DeclaringType.IsValueType)
                             {
                                 Debug.Assert(targetMethod.DeclaringType.IsInterface);
-                                Debug.Assert(opCode == DarksVMConstants.ECALL_CALLVIRT);
+                                Debug.Assert(opCode == NeonVMConstants.ECALL_CALLVIRT);
                                 // Interface dispatch on valuetypes => use constrained. invocation
                                 constrainType = thisSlot.O.GetType();
                             }
@@ -217,18 +217,18 @@ namespace KoiVM.Runtime.VCalls
 
             OpCode callOp;
             Type retType;
-            if(opCode == DarksVMConstants.ECALL_CALL)
+            if(opCode == NeonVMConstants.ECALL_CALL)
             {
                 callOp = System.Reflection.Emit.OpCodes.Call;
                 retType = targetMethod is MethodInfo ? ((MethodInfo) targetMethod).ReturnType : typeof(void);
             }
-            else if(opCode == DarksVMConstants.ECALL_CALLVIRT ||
-                    opCode == DarksVMConstants.ECALL_CALLVIRT_CONSTRAINED)
+            else if(opCode == NeonVMConstants.ECALL_CALLVIRT ||
+                    opCode == NeonVMConstants.ECALL_CALLVIRT_CONSTRAINED)
             {
                 callOp = System.Reflection.Emit.OpCodes.Callvirt;
                 retType = targetMethod is MethodInfo ? ((MethodInfo) targetMethod).ReturnType : typeof(void);
             }
-            else if(opCode == DarksVMConstants.ECALL_NEWOBJ)
+            else if(opCode == NeonVMConstants.ECALL_NEWOBJ)
             {
                 callOp = System.Reflection.Emit.OpCodes.Newobj;
                 retType = targetMethod.DeclaringType;
@@ -241,11 +241,11 @@ namespace KoiVM.Runtime.VCalls
 
             var result = proxy(ctx, references, types);
 
-            if(retType != typeof(void)) ctx.Stack[++sp] = DarksVMSlot.FromObject(result, retType);
-            else if(opCode == DarksVMConstants.ECALL_NEWOBJ) ctx.Stack[++sp] = DarksVMSlot.FromObject(result, retType);
+            if(retType != typeof(void)) ctx.Stack[++sp] = NeonVMSlot.FromObject(result, retType);
+            else if(opCode == NeonVMConstants.ECALL_NEWOBJ) ctx.Stack[++sp] = NeonVMSlot.FromObject(result, retType);
 
             ctx.Stack.SetTopPosition(sp);
-            ctx.Registers[DarksVMConstants.REG_SP].U4 = sp;
+            ctx.Registers[NeonVMConstants.REG_SP].U4 = sp;
             state = ExecutionState.Next;
         }
     }

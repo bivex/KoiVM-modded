@@ -24,7 +24,7 @@ namespace KoiVM.AST.IL
 
         public uint Offset => methodEntry == null ? 0 : methodEntry.Content[0].Offset;
 
-        public void Resolve(DarksVMRuntime runtime)
+        public void Resolve(NeonVMRuntime runtime)
         {
             runtime.LookupMethod(Target, out methodEntry);
         }

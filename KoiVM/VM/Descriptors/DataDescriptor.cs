@@ -11,7 +11,7 @@ namespace KoiVM.VM
     public class DataDescriptor
     {
         private readonly Dictionary<MethodDef, uint> exportMap = new Dictionary<MethodDef, uint>();
-        private readonly Dictionary<MethodDef, DarksVMMethodInfo> methodInfos = new Dictionary<MethodDef, DarksVMMethodInfo>();
+        private readonly Dictionary<MethodDef, NeonVMMethodInfo> methodInfos = new Dictionary<MethodDef, NeonVMMethodInfo>();
 
         private uint nextRefId;
         private uint nextSigId;
@@ -84,13 +84,13 @@ namespace KoiVM.VM
             return ret;
         }
 
-        public DarksVMMethodInfo LookupInfo(MethodDef method)
+        public NeonVMMethodInfo LookupInfo(MethodDef method)
         {
-            DarksVMMethodInfo ret;
+            NeonVMMethodInfo ret;
             if(!methodInfos.TryGetValue(method, out ret))
             {
                 var k = random.Next();
-                ret = new DarksVMMethodInfo
+                ret = new NeonVMMethodInfo
                 {
                     EntryKey = (byte) k,
                     ExitKey = (byte) (k >> 8)
@@ -100,7 +100,7 @@ namespace KoiVM.VM
             return ret;
         }
 
-        public void SetInfo(MethodDef method, DarksVMMethodInfo info)
+        public void SetInfo(MethodDef method, NeonVMMethodInfo info)
         {
             methodInfos[method] = info;
         }

@@ -102,7 +102,7 @@ namespace KoiVM.VMIR.Transforms
                 ILAST = instr.ILAST
             });
             if(retVar != null)
-                callInstrs.Add(new IRInstruction(IROpCode.MOV, retVar, new IRRegister(DarksVMRegisters.R0, retVar.Type))
+                callInstrs.Add(new IRInstruction(IROpCode.MOV, retVar, new IRRegister(NeonVMRegisters.R0, retVar.Type))
                 {
                     Annotation = instr.Annotation,
                     ILAST = instr.ILAST

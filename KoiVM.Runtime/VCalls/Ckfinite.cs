@@ -10,15 +10,15 @@ namespace KoiVM.Runtime.VCalls
 {
     internal class Ckfinite : IVCall
     {
-        public byte Code => DarksVMConstants.VCALL_CKFINITE;
+        public byte Code => NeonVMConstants.VCALL_CKFINITE;
 
-        public void Load(DarksVMContext ctx, out ExecutionState state)
+        public void Load(NeonVMContext ctx, out ExecutionState state)
         {
-            var sp = ctx.Registers[DarksVMConstants.REG_SP].U4;
+            var sp = ctx.Registers[NeonVMConstants.REG_SP].U4;
             var valueSlot = ctx.Stack[sp--];
 
-            var fl = ctx.Registers[DarksVMConstants.REG_FL].U1;
-            if((fl & DarksVMConstants.FL_UNSIGNED) != 0)
+            var fl = ctx.Registers[NeonVMConstants.REG_FL].U1;
+            if((fl & NeonVMConstants.FL_UNSIGNED) != 0)
             {
                 var v = valueSlot.R4;
                 if(float.IsNaN(v) || float.IsInfinity(v))
@@ -32,7 +32,7 @@ namespace KoiVM.Runtime.VCalls
             }
 
             ctx.Stack.SetTopPosition(sp);
-            ctx.Registers[DarksVMConstants.REG_SP].U4 = sp;
+            ctx.Registers[NeonVMConstants.REG_SP].U4 = sp;
             state = ExecutionState.Next;
         }
     }

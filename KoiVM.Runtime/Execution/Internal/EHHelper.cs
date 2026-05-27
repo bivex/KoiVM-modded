@@ -92,7 +92,7 @@ namespace KoiVM.Runtime.Execution.Internal
 
                 ilGen.Emit(System.Reflection.Emit.OpCodes.Dup);
                 ilGen.Emit(System.Reflection.Emit.OpCodes.Ldstr,
-                    "{1}" + Environment.NewLine + "   " + at + " DarksVM.Load() [{0}]" + Environment.NewLine);
+                    "{1}" + Environment.NewLine + "   " + at + " NeonVM.Load() [{0}]" + Environment.NewLine);
                 ilGen.Emit(System.Reflection.Emit.OpCodes.Ldarg_1);
                 ilGen.Emit(System.Reflection.Emit.OpCodes.Ldarg_0);
                 ilGen.Emit(System.Reflection.Emit.OpCodes.Ldfld, field);

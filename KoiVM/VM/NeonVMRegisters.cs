@@ -7,7 +7,7 @@ using System.Reflection;
 namespace KoiVM.VM
 {
     [Obfuscation(Exclude = false, ApplyToMembers = false, Feature = "+rename(forceRen=true);")]
-    public enum DarksVMRegisters
+    public enum NeonVMRegisters
     {
         R0 = 0,
         R1 = 1,

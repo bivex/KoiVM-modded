@@ -11,11 +11,11 @@ namespace KoiVM.Runtime.VCalls
 {
     internal class Box : IVCall
     {
-        public byte Code => DarksVMConstants.VCALL_BOX;
+        public byte Code => NeonVMConstants.VCALL_BOX;
 
-        public void Load(DarksVMContext ctx, out ExecutionState state)
+        public void Load(NeonVMContext ctx, out ExecutionState state)
         {
-            var sp = ctx.Registers[DarksVMConstants.REG_SP].U4;
+            var sp = ctx.Registers[NeonVMConstants.REG_SP].U4;
             var typeSlot = ctx.Stack[sp--];
             var valSlot = ctx.Stack[sp];
 
@@ -32,7 +32,7 @@ namespace KoiVM.Runtime.VCalls
             ctx.Stack[sp] = valSlot;
 
             ctx.Stack.SetTopPosition(sp);
-            ctx.Registers[DarksVMConstants.REG_SP].U4 = sp;
+            ctx.Registers[NeonVMConstants.REG_SP].U4 = sp;
             state = ExecutionState.Next;
         }
     }

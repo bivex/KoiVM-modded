@@ -11,11 +11,11 @@ using KoiVM.Runtime.Execution.Internal;
 
 namespace KoiVM.Runtime.Execution
 {
-    internal static class DarksVMDispatcher
+    internal static class NeonVMDispatcher
     {
         private static uint rand_state = (uint) Environment.TickCount;
 
-        public static ExecutionState Load(DarksVMContext ctx)
+        public static ExecutionState Load(NeonVMContext ctx)
         {
             var state = ExecutionState.Next;
             var isAbnormal = true;
@@ -28,17 +28,17 @@ namespace KoiVM.Runtime.Execution
                     {
                         case ExecutionState.Throw:
                         {
-                            var sp = ctx.Registers[DarksVMConstants.REG_SP].U4;
+                            var sp = ctx.Registers[NeonVMConstants.REG_SP].U4;
                             var ex = ctx.Stack[sp--];
-                            ctx.Registers[DarksVMConstants.REG_SP].U4 = sp;
+                            ctx.Registers[NeonVMConstants.REG_SP].U4 = sp;
                             DoThrow(ctx, ex.O);
                             break;
                         }
                         case ExecutionState.Rethrow:
                         {
-                            var sp = ctx.Registers[DarksVMConstants.REG_SP].U4;
+                            var sp = ctx.Registers[NeonVMConstants.REG_SP].U4;
                             var ex = ctx.Stack[sp--];
-                            ctx.Registers[DarksVMConstants.REG_SP].U4 = sp;
+                            ctx.Registers[NeonVMConstants.REG_SP].U4 = sp;
                             HandleRethrow(ctx, ex.O);
                             return state;
                         }
@@ -75,7 +75,7 @@ namespace KoiVM.Runtime.Execution
             return null;
         }
 
-        private static ExecutionState DarkInternal(DarksVMContext ctx)
+        private static ExecutionState DarkInternal(NeonVMContext ctx)
         {
             ExecutionState state;
             while(true)
@@ -84,7 +84,7 @@ namespace KoiVM.Runtime.Execution
                 var p = ctx.ReadByte(); // For key fixup
                 OpCodeMap.Lookup(op).Load(ctx, out state);
 
-                if(ctx.Registers[DarksVMConstants.REG_IP].U8 == 1)
+                if(ctx.Registers[NeonVMConstants.REG_IP].U8 == 1)
                     state = ExecutionState.Exit;
 
                 if(state != ExecutionState.Next)
@@ -92,7 +92,7 @@ namespace KoiVM.Runtime.Execution
             }
         }
 
-        private static void SetupEHState(DarksVMContext ctx, object ex)
+        private static void SetupEHState(NeonVMContext ctx, object ex)
         {
             EHState ehState;
             if(ctx.EHStates.Count != 0)
@@ -100,15 +100,15 @@ namespace KoiVM.Runtime.Execution
                 ehState = ctx.EHStates[ctx.EHStates.Count - 1];
                 if(ehState.CurrentFrame != null)
                 {
-                    if(ehState.CurrentProcess == EHState.EHProcess.Searching) ctx.Registers[DarksVMConstants.REG_R1].U1 = 0;
+                    if(ehState.CurrentProcess == EHState.EHProcess.Searching) ctx.Registers[NeonVMConstants.REG_R1].U1 = 0;
                     else if(ehState.CurrentProcess == EHState.EHProcess.Unwinding) ehState.ExceptionObj = ex;
                     return;
                 }
             }
             ehState = new EHState
             {
-                OldBP = ctx.Registers[DarksVMConstants.REG_BP],
-                OldSP = ctx.Registers[DarksVMConstants.REG_SP],
+                OldBP = ctx.Registers[NeonVMConstants.REG_BP],
+                OldSP = ctx.Registers[NeonVMConstants.REG_SP],
                 ExceptionObj = ex,
                 CurrentProcess = EHState.EHProcess.Searching,
                 CurrentFrame = null,
@@ -117,7 +117,7 @@ namespace KoiVM.Runtime.Execution
             ctx.EHStates.Add(ehState);
         }
 
-        private static void HandleRethrow(DarksVMContext ctx, object ex)
+        private static void HandleRethrow(NeonVMContext ctx, object ex)
         {
             if(ctx.EHStates.Count > 0)
                 SetupEHState(ctx, ex);
@@ -125,17 +125,17 @@ namespace KoiVM.Runtime.Execution
                 DoThrow(ctx, ex);
         }
 
-        private static unsafe string GetIP(DarksVMContext ctx)
+        private static unsafe string GetIP(NeonVMContext ctx)
         {
-            var ip = (uint) (ctx.Registers[DarksVMConstants.REG_IP].U8 - (ulong) ctx.Instance.Data.KoiSection);
+            var ip = (uint) (ctx.Registers[NeonVMConstants.REG_IP].U8 - (ulong) ctx.Instance.Data.KoiSection);
             ulong key = (uint) (new object().GetHashCode() + Environment.TickCount) | 1;
             return (((ip * key) << 32) | (key & ~1UL)).ToString("x16");
         }
 
-        private static unsafe string StackWalk(DarksVMContext ctx)
+        private static unsafe string StackWalk(NeonVMContext ctx)
         {
-            var ip = (uint) (ctx.Registers[DarksVMConstants.REG_IP].U8 - (ulong) ctx.Instance.Data.KoiSection);
-            var bp = ctx.Registers[DarksVMConstants.REG_BP].U4;
+            var ip = (uint) (ctx.Registers[NeonVMConstants.REG_IP].U8 - (ulong) ctx.Instance.Data.KoiSection);
+            var bp = ctx.Registers[NeonVMConstants.REG_BP].U4;
             var sb = new StringBuilder();
             do
             {
@@ -159,13 +159,13 @@ namespace KoiVM.Runtime.Execution
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        internal static void DoThrow(DarksVMContext ctx, object ex)
+        internal static void DoThrow(NeonVMContext ctx, object ex)
         {
             if(ex is Exception) EHHelper.Rethrow((Exception) ex, GetIP(ctx));
             throw Throw(ex);
         }
 
-        private static void HandleEH(DarksVMContext ctx, ref ExecutionState state)
+        private static void HandleEH(NeonVMContext ctx, ref ExecutionState state)
         {
             var ehState = ctx.EHStates[ctx.EHStates.Count - 1];
             switch(ehState.CurrentProcess)
@@ -175,7 +175,7 @@ namespace KoiVM.Runtime.Execution
                     if(ehState.CurrentFrame != null)
                     {
                         // Return from filter
-                        var filterResult = ctx.Registers[DarksVMConstants.REG_R1].U1 != 0;
+                        var filterResult = ctx.Registers[NeonVMConstants.REG_R1].U1 != 0;
                         if(filterResult)
                         {
                             ehState.CurrentProcess = EHState.EHProcess.Unwinding;
@@ -195,19 +195,19 @@ namespace KoiVM.Runtime.Execution
                     for(; ehState.CurrentFrame >= 0 && ehState.HandlerFrame == null; ehState.CurrentFrame--)
                     {
                         var frame = ctx.EHStack[ehState.CurrentFrame.Value];
-                        if(frame.EHType == DarksVMConstants.EH_FILTER)
+                        if(frame.EHType == NeonVMConstants.EH_FILTER)
                         {
                             // Run filter
                             var sp = ehState.OldSP.U4;
                             ctx.Stack.SetTopPosition(++sp);
-                            ctx.Stack[sp] = new DarksVMSlot {O = ehState.ExceptionObj};
-                            ctx.Registers[DarksVMConstants.REG_K1].U1 = 0;
-                            ctx.Registers[DarksVMConstants.REG_SP].U4 = sp;
-                            ctx.Registers[DarksVMConstants.REG_BP] = frame.BP;
-                            ctx.Registers[DarksVMConstants.REG_IP].U8 = frame.FilterAddr;
+                            ctx.Stack[sp] = new NeonVMSlot {O = ehState.ExceptionObj};
+                            ctx.Registers[NeonVMConstants.REG_K1].U1 = 0;
+                            ctx.Registers[NeonVMConstants.REG_SP].U4 = sp;
+                            ctx.Registers[NeonVMConstants.REG_BP] = frame.BP;
+                            ctx.Registers[NeonVMConstants.REG_IP].U8 = frame.FilterAddr;
                             break;
                         }
-                        if(frame.EHType == DarksVMConstants.EH_CATCH)
+                        if(frame.EHType == NeonVMConstants.EH_CATCH)
                             if(frame.CatchType.IsAssignableFrom(exType))
                             {
                                 ehState.CurrentProcess = EHState.EHProcess.Unwinding;
@@ -237,7 +237,7 @@ namespace KoiVM.Runtime.Execution
                     {
                         var frame = ctx.EHStack[i];
                         ctx.EHStack.RemoveAt(i);
-                        if(frame.EHType == DarksVMConstants.EH_FAULT || frame.EHType == DarksVMConstants.EH_FINALLY)
+                        if(frame.EHType == NeonVMConstants.EH_FAULT || frame.EHType == NeonVMConstants.EH_FINALLY)
                         {
                             // Run finally
                             SetupFinallyFrame(ctx, frame);
@@ -253,12 +253,12 @@ namespace KoiVM.Runtime.Execution
                         // Run handler
                         frame.SP.U4++;
                         ctx.Stack.SetTopPosition(frame.SP.U4);
-                        ctx.Stack[frame.SP.U4] = new DarksVMSlot {O = ehState.ExceptionObj};
+                        ctx.Stack[frame.SP.U4] = new NeonVMSlot {O = ehState.ExceptionObj};
 
-                        ctx.Registers[DarksVMConstants.REG_K1].U1 = 0;
-                        ctx.Registers[DarksVMConstants.REG_SP] = frame.SP;
-                        ctx.Registers[DarksVMConstants.REG_BP] = frame.BP;
-                        ctx.Registers[DarksVMConstants.REG_IP].U8 = frame.HandlerAddr;
+                        ctx.Registers[NeonVMConstants.REG_K1].U1 = 0;
+                        ctx.Registers[NeonVMConstants.REG_SP] = frame.SP;
+                        ctx.Registers[NeonVMConstants.REG_BP] = frame.BP;
+                        ctx.Registers[NeonVMConstants.REG_IP].U8 = frame.HandlerAddr;
 
                         ctx.EHStates.RemoveAt(ctx.EHStates.Count - 1);
                     }
@@ -270,15 +270,15 @@ namespace KoiVM.Runtime.Execution
             }
         }
 
-        private static void HandleAbnormalExit(DarksVMContext ctx)
+        private static void HandleAbnormalExit(NeonVMContext ctx)
         {
-            var oldBP = ctx.Registers[DarksVMConstants.REG_BP];
-            var oldSP = ctx.Registers[DarksVMConstants.REG_SP];
+            var oldBP = ctx.Registers[NeonVMConstants.REG_BP];
+            var oldSP = ctx.Registers[NeonVMConstants.REG_SP];
 
             for(var i = ctx.EHStack.Count - 1; i >= 0; i--)
             {
                 var frame = ctx.EHStack[i];
-                if(frame.EHType == DarksVMConstants.EH_FAULT || frame.EHType == DarksVMConstants.EH_FINALLY)
+                if(frame.EHType == NeonVMConstants.EH_FAULT || frame.EHType == NeonVMConstants.EH_FINALLY)
                 {
                     SetupFinallyFrame(ctx, frame);
                     Load(ctx);
@@ -287,15 +287,15 @@ namespace KoiVM.Runtime.Execution
             ctx.EHStack.Clear();
         }
 
-        private static void SetupFinallyFrame(DarksVMContext ctx, EHFrame frame)
+        private static void SetupFinallyFrame(NeonVMContext ctx, EHFrame frame)
         {
             frame.SP.U4++;
-            ctx.Registers[DarksVMConstants.REG_K1].U1 = 0;
-            ctx.Registers[DarksVMConstants.REG_SP] = frame.SP;
-            ctx.Registers[DarksVMConstants.REG_BP] = frame.BP;
-            ctx.Registers[DarksVMConstants.REG_IP].U8 = frame.HandlerAddr;
+            ctx.Registers[NeonVMConstants.REG_K1].U1 = 0;
+            ctx.Registers[NeonVMConstants.REG_SP] = frame.SP;
+            ctx.Registers[NeonVMConstants.REG_BP] = frame.BP;
+            ctx.Registers[NeonVMConstants.REG_IP].U8 = frame.HandlerAddr;
 
-            ctx.Stack[frame.SP.U4] = new DarksVMSlot {U8 = 1};
+            ctx.Stack[frame.SP.U4] = new NeonVMSlot {U8 = 1};
         }
     }
 }

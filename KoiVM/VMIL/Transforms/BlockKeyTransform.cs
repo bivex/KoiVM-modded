@@ -16,9 +16,9 @@ namespace KoiVM.VMIL.Transforms
     public class BlockKeyTransform : IPostTransform
     {
         private Dictionary<ILBlock, BlockKey> Keys;
-        private DarksVMMethodInfo methodInfo;
+        private NeonVMMethodInfo methodInfo;
 
-        private DarksVMRuntime runtime;
+        private NeonVMRuntime runtime;
 
         public void Initialize(ILPostTransformer tr)
         {

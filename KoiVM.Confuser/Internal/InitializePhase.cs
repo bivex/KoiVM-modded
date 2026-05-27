@@ -47,11 +47,11 @@ namespace KoiVM.Confuser.Internal
 
         protected override void Execute(ConfuserContext context, ProtectionParameters parameters)
         {
-            context.Logger.Info("Initializing DarksVM");
+            context.Logger.Info("Initializing NeonVM");
 
             foreach (ModuleDefMD module in context.Modules)
             {
-                context.Logger.InfoFormat("Protecting '{0}' with DarksVM...", module.Name);
+                context.Logger.InfoFormat("Protecting '{0}' with NeonVM...", module.Name);
             }
 
 

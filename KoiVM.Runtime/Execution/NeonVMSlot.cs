@@ -11,7 +11,7 @@ using KoiVM.Runtime.Execution.Internal;
 namespace KoiVM.Runtime.Execution
 {
     [StructLayout(LayoutKind.Explicit)]
-    internal struct DarksVMSlot
+    internal struct NeonVMSlot
     {
         [FieldOffset(0)] private ulong u8;
         [FieldOffset(0)] private double r8;
@@ -91,9 +91,9 @@ namespace KoiVM.Runtime.Execution
             }
         }
 
-        public static readonly DarksVMSlot Null;
+        public static readonly NeonVMSlot Null;
 
-        public static unsafe DarksVMSlot FromObject(object obj, Type type)
+        public static unsafe NeonVMSlot FromObject(object obj, Type type)
         {
             if(type.IsEnum)
             {
@@ -104,44 +104,44 @@ namespace KoiVM.Runtime.Execution
             switch(Type.GetTypeCode(type))
             {
                 case TypeCode.Byte:
-                    return new DarksVMSlot {u1 = (byte) obj};
+                    return new NeonVMSlot {u1 = (byte) obj};
                 case TypeCode.SByte:
-                    return new DarksVMSlot {u1 = (byte) (sbyte) obj};
+                    return new NeonVMSlot {u1 = (byte) (sbyte) obj};
                 case TypeCode.Boolean:
-                    return new DarksVMSlot {u1 = (byte) ((bool) obj ? 1 : 0)};
+                    return new NeonVMSlot {u1 = (byte) ((bool) obj ? 1 : 0)};
 
                 case TypeCode.UInt16:
-                    return new DarksVMSlot {u2 = (ushort) obj};
+                    return new NeonVMSlot {u2 = (ushort) obj};
                 case TypeCode.Int16:
-                    return new DarksVMSlot {u2 = (ushort) (short) obj};
+                    return new NeonVMSlot {u2 = (ushort) (short) obj};
                 case TypeCode.Char:
-                    return new DarksVMSlot {u2 = (char) obj};
+                    return new NeonVMSlot {u2 = (char) obj};
 
                 case TypeCode.UInt32:
-                    return new DarksVMSlot {u4 = (uint) obj};
+                    return new NeonVMSlot {u4 = (uint) obj};
                 case TypeCode.Int32:
-                    return new DarksVMSlot {u4 = (uint) (int) obj};
+                    return new NeonVMSlot {u4 = (uint) (int) obj};
 
                 case TypeCode.UInt64:
-                    return new DarksVMSlot {u8 = (ulong) obj};
+                    return new NeonVMSlot {u8 = (ulong) obj};
                 case TypeCode.Int64:
-                    return new DarksVMSlot {u8 = (ulong) (long) obj};
+                    return new NeonVMSlot {u8 = (ulong) (long) obj};
 
                 case TypeCode.Single:
-                    return new DarksVMSlot {r4 = (float) obj};
+                    return new NeonVMSlot {r4 = (float) obj};
                 case TypeCode.Double:
-                    return new DarksVMSlot {r8 = (double) obj};
+                    return new NeonVMSlot {r8 = (double) obj};
 
                 default:
                     if(obj is Pointer)
-                        return new DarksVMSlot {u8 = (ulong) Pointer.Unbox(obj)};
+                        return new NeonVMSlot {u8 = (ulong) Pointer.Unbox(obj)};
                     if(obj is IntPtr)
-                        return new DarksVMSlot {u8 = (ulong) (IntPtr) obj};
+                        return new NeonVMSlot {u8 = (ulong) (IntPtr) obj};
                     if(obj is UIntPtr)
-                        return new DarksVMSlot {u8 = (ulong) (UIntPtr) obj};
+                        return new NeonVMSlot {u8 = (ulong) (UIntPtr) obj};
                     if(type.IsValueType)
-                        return new DarksVMSlot {o = ValueTypeBox.Box(obj, type)};
-                    return new DarksVMSlot {o = obj};
+                        return new NeonVMSlot {o = ValueTypeBox.Box(obj, type)};
+                    return new NeonVMSlot {o = obj};
             }
         }
 

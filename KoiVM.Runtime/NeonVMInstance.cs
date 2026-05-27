@@ -13,32 +13,32 @@ using KoiVM.Runtime.Execution.Internal;
 
 namespace What_a_great_VM
 {
-    internal unsafe class DarksVMInstance
+    internal unsafe class NeonVMInstance
     {
-        [ThreadStatic] private static Dictionary<Module, DarksVMInstance> instances;
+        [ThreadStatic] private static Dictionary<Module, NeonVMInstance> instances;
         private static readonly object initLock = new object();
         private static readonly Dictionary<Module, int> initialized = new Dictionary<Module, int>();
 
-        private readonly Stack<DarksVMContext> ctxStack = new Stack<DarksVMContext>();
-        private DarksVMContext currentCtx;
+        private readonly Stack<NeonVMContext> ctxStack = new Stack<NeonVMContext>();
+        private NeonVMContext currentCtx;
 
-        private DarksVMInstance(DarksVMData data)
+        private NeonVMInstance(NeonVMData data)
         {
             Data = data;
         }
 
-        public DarksVMData Data
+        public NeonVMData Data
         {
             get;
         }
 
-        public static DarksVMInstance Instance(uint num, Module module)
+        public static NeonVMInstance Instance(uint num, Module module)
         {
-            DarksVMInstance inst;
-            if(instances == null) instances = new Dictionary<Module, DarksVMInstance>();
+            NeonVMInstance inst;
+            if(instances == null) instances = new Dictionary<Module, NeonVMInstance>();
             if(!instances.TryGetValue(module, out inst))
             {
-                inst = new DarksVMInstance(DarksVMData.Instance(module));
+                inst = new NeonVMInstance(NeonVMData.Instance(module));
                 instances[module] = inst;
                 lock(initLock)
                 {
@@ -52,7 +52,7 @@ namespace What_a_great_VM
             return inst;
         }
 
-        public static DarksVMInstance Instance(uint num, int id)
+        public static NeonVMInstance Instance(uint num, int id)
         {
             foreach(var entry in initialized)
                 if(entry.Value == id)
@@ -67,7 +67,7 @@ namespace What_a_great_VM
 
         private void Initialize()
         {
-            var initFunc = Data.LookupExport(DarksVMConstants.HELPER_INIT);
+            var initFunc = Data.LookupExport(NeonVMConstants.HELPER_INIT);
             var codeAddr = (ulong) (Data.KoiSection + initFunc.CodeOffset);
             Load(codeAddr, initFunc.EntryKey, initFunc.Signature, new object[0]);
         }
@@ -98,30 +98,30 @@ namespace What_a_great_VM
             Load(codeAddr, key, sig, typedRefs, retTypedRef);
         }
 
-        private object Load(ulong codeAddr, uint key, DarksVMFuncSig sig, object[] arguments)
+        private object Load(ulong codeAddr, uint key, NeonVMFuncSig sig, object[] arguments)
         {
             if(currentCtx != null)
                 ctxStack.Push(currentCtx);
-            currentCtx = new DarksVMContext(this);
+            currentCtx = new NeonVMContext(this);
 
             try
             {
                 Debug.Assert(sig.ParamTypes.Length == arguments.Length);
                 currentCtx.Stack.SetTopPosition((uint) arguments.Length + 1);
-                for(uint i = 0; i < arguments.Length; i++) currentCtx.Stack[i + 1] = DarksVMSlot.FromObject(arguments[i], sig.ParamTypes[i]);
-                currentCtx.Stack[(uint) arguments.Length + 1] = new DarksVMSlot {U8 = 1};
+                for(uint i = 0; i < arguments.Length; i++) currentCtx.Stack[i + 1] = NeonVMSlot.FromObject(arguments[i], sig.ParamTypes[i]);
+                currentCtx.Stack[(uint) arguments.Length + 1] = new NeonVMSlot {U8 = 1};
 
-                currentCtx.Registers[DarksVMConstants.REG_K1] = new DarksVMSlot {U4 = key};
-                currentCtx.Registers[DarksVMConstants.REG_BP] = new DarksVMSlot {U4 = 0};
-                currentCtx.Registers[DarksVMConstants.REG_SP] = new DarksVMSlot {U4 = (uint) arguments.Length + 1};
-                currentCtx.Registers[DarksVMConstants.REG_IP] = new DarksVMSlot {U8 = codeAddr};
-                DarksVMDispatcher.Load(currentCtx);
+                currentCtx.Registers[NeonVMConstants.REG_K1] = new NeonVMSlot {U4 = key};
+                currentCtx.Registers[NeonVMConstants.REG_BP] = new NeonVMSlot {U4 = 0};
+                currentCtx.Registers[NeonVMConstants.REG_SP] = new NeonVMSlot {U4 = (uint) arguments.Length + 1};
+                currentCtx.Registers[NeonVMConstants.REG_IP] = new NeonVMSlot {U8 = codeAddr};
+                NeonVMDispatcher.Load(currentCtx);
                 Debug.Assert(currentCtx.EHStack.Count == 0);
 
                 object retVal = null;
                 if(sig.RetType != typeof(void))
                 {
-                    var retSlot = currentCtx.Registers[DarksVMConstants.REG_R0];
+                    var retSlot = currentCtx.Registers[NeonVMConstants.REG_R0];
                     if(Type.GetTypeCode(sig.RetType) == TypeCode.String && retSlot.O == null)
                         retVal = Data.LookupString(retSlot.U4);
                     else
@@ -139,11 +139,11 @@ namespace What_a_great_VM
             }
         }
 
-        private void Load(ulong codeAddr, uint key, DarksVMFuncSig sig, void*[] arguments, void* retTypedRef)
+        private void Load(ulong codeAddr, uint key, NeonVMFuncSig sig, void*[] arguments, void* retTypedRef)
         {
             if(currentCtx != null)
                 ctxStack.Push(currentCtx);
-            currentCtx = new DarksVMContext(this);
+            currentCtx = new NeonVMContext(this);
 
             try
             {
@@ -154,34 +154,34 @@ namespace What_a_great_VM
                     var paramType = sig.ParamTypes[i];
                     if(paramType.IsByRef)
                     {
-                        currentCtx.Stack[i + 1] = new DarksVMSlot {O = new TypedRef(arguments[i])};
+                        currentCtx.Stack[i + 1] = new NeonVMSlot {O = new TypedRef(arguments[i])};
                     }
                     else
                     {
                         var typedRef = *(TypedReference*) arguments[i];
-                        currentCtx.Stack[i + 1] = DarksVMSlot.FromObject(TypedReference.ToObject(typedRef), __reftype(typedRef));
+                        currentCtx.Stack[i + 1] = NeonVMSlot.FromObject(TypedReference.ToObject(typedRef), __reftype(typedRef));
                     }
                 }
-                currentCtx.Stack[(uint) arguments.Length + 1] = new DarksVMSlot {U8 = 1};
+                currentCtx.Stack[(uint) arguments.Length + 1] = new NeonVMSlot {U8 = 1};
 
-                currentCtx.Registers[DarksVMConstants.REG_K1] = new DarksVMSlot {U4 = key};
-                currentCtx.Registers[DarksVMConstants.REG_BP] = new DarksVMSlot {U4 = 0};
-                currentCtx.Registers[DarksVMConstants.REG_SP] = new DarksVMSlot {U4 = (uint) arguments.Length + 1};
-                currentCtx.Registers[DarksVMConstants.REG_IP] = new DarksVMSlot {U8 = codeAddr};
-                DarksVMDispatcher.Load(currentCtx);
+                currentCtx.Registers[NeonVMConstants.REG_K1] = new NeonVMSlot {U4 = key};
+                currentCtx.Registers[NeonVMConstants.REG_BP] = new NeonVMSlot {U4 = 0};
+                currentCtx.Registers[NeonVMConstants.REG_SP] = new NeonVMSlot {U4 = (uint) arguments.Length + 1};
+                currentCtx.Registers[NeonVMConstants.REG_IP] = new NeonVMSlot {U8 = codeAddr};
+                NeonVMDispatcher.Load(currentCtx);
                 Debug.Assert(currentCtx.EHStack.Count == 0);
 
                 if(sig.RetType != typeof(void))
                     if(sig.RetType.IsByRef)
                     {
-                        var retRef = currentCtx.Registers[DarksVMConstants.REG_R0].O;
+                        var retRef = currentCtx.Registers[NeonVMConstants.REG_R0].O;
                         if(!(retRef is IReference))
                             throw new ExecutionEngineException();
                         ((IReference) retRef).ToTypedReference(currentCtx, retTypedRef, sig.RetType.GetElementType());
                     }
                     else
                     {
-                        var retSlot = currentCtx.Registers[DarksVMConstants.REG_R0];
+                        var retSlot = currentCtx.Registers[NeonVMConstants.REG_R0];
                         object retVal;
                         if(Type.GetTypeCode(sig.RetType) == TypeCode.String && retSlot.O == null)
                             retVal = Data.LookupString(retSlot.U4);

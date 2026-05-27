@@ -17,7 +17,7 @@ namespace KoiVM.VMIL
     {
         private ITransform[] pipeline;
 
-        public ILTransformer(MethodDef method, ScopeBlock rootScope, DarksVMRuntime runtime)
+        public ILTransformer(MethodDef method, ScopeBlock rootScope, NeonVMRuntime runtime)
         {
             RootScope = rootScope;
             Method = method;
@@ -27,7 +27,7 @@ namespace KoiVM.VMIL
             pipeline = InitPipeline();
         }
 
-        public DarksVMRuntime Runtime
+        public NeonVMRuntime Runtime
         {
             get;
         }

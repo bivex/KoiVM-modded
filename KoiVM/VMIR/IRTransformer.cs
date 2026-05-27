@@ -16,7 +16,7 @@ namespace KoiVM.VMIR
     {
         private ITransform[] pipeline;
 
-        public IRTransformer(ScopeBlock rootScope, IRContext ctx, DarksVMRuntime runtime)
+        public IRTransformer(ScopeBlock rootScope, IRContext ctx, NeonVMRuntime runtime)
         {
             RootScope = rootScope;
             Context = ctx;
@@ -31,7 +31,7 @@ namespace KoiVM.VMIR
             get;
         }
 
-        public DarksVMRuntime Runtime
+        public NeonVMRuntime Runtime
         {
             get;
         }

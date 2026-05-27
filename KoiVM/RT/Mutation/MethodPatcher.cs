@@ -14,7 +14,7 @@ namespace KoiVM.RT.Mutation
 
         public MethodPatcher(ModuleDef rtModule)
         {
-            foreach(var entry in rtModule.Find(RTMap.DarksVMEntry, true).FindMethods(RTMap.DarksVMRun))
+            foreach(var entry in rtModule.Find(RTMap.NeonVMEntry, true).FindMethods(RTMap.NeonVMRun))
                 if(entry.Parameters.Count == 6)
                     vmEntryNormal = entry;
                 else

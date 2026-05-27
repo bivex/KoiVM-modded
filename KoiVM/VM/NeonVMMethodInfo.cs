@@ -7,19 +7,19 @@ using KoiVM.CFG;
 
 namespace KoiVM.VM
 {
-    public class DarksVMMethodInfo
+    public class NeonVMMethodInfo
     {
         public readonly Dictionary<IBasicBlock, VMBlockKey> BlockKeys;
-        public readonly HashSet<DarksVMRegisters> UsedRegister;
+        public readonly HashSet<NeonVMRegisters> UsedRegister;
         public byte EntryKey;
         public byte ExitKey;
 
         public ScopeBlock RootScope;
 
-        public DarksVMMethodInfo()
+        public NeonVMMethodInfo()
         {
             BlockKeys = new Dictionary<IBasicBlock, VMBlockKey>();
-            UsedRegister = new HashSet<DarksVMRegisters>();
+            UsedRegister = new HashSet<NeonVMRegisters>();
         }
     }
 

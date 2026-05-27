@@ -13,7 +13,7 @@ namespace KoiVM.VMIL.Transforms
 {
     public class SaveRegistersTransform : IPostTransform
     {
-        private HashSet<DarksVMRegisters> saveRegs;
+        private HashSet<NeonVMRegisters> saveRegs;
 
         public void Initialize(ILPostTransformer tr)
         {
@@ -38,7 +38,7 @@ namespace KoiVM.VMIL.Transforms
                 return;
             }
 
-            var saving = new HashSet<DarksVMRegisters>(saveRegs);
+            var saving = new HashSet<NeonVMRegisters>(saveRegs);
             var retVar = (IRVariable) callInfo.ReturnValue;
             // R0 = return register, need to save if retVar register is not R0
             //Debug.Assert(!(retVar == null ^ (callInfo.ReturnRegister == null ^ callInfo.ReturnSlot == null)));
@@ -47,15 +47,15 @@ namespace KoiVM.VMIL.Transforms
                 {
                     var retReg = callInfo.ReturnRegister.Register;
                     saving.Remove(retReg);
-                    if(retReg != DarksVMRegisters.R0)
-                        saving.Add(DarksVMRegisters.R0);
+                    if(retReg != NeonVMRegisters.R0)
+                        saving.Add(NeonVMRegisters.R0);
                 }
                 else
                 {
-                    saving.Add(DarksVMRegisters.R0);
+                    saving.Add(NeonVMRegisters.R0);
                 }
             else
-                saving.Add(DarksVMRegisters.R0);
+                saving.Add(NeonVMRegisters.R0);
 
             if(instr.OpCode == ILOpCode.__BEGINCALL)
                 instrs.Replace(index, saving

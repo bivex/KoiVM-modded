@@ -16,12 +16,12 @@ namespace KoiVM
     [Obfuscation(Exclude = false, Feature = "+koi;-ref proxy")]
     public class MethodVirtualizer
     {
-        public MethodVirtualizer(DarksVMRuntime runtime)
+        public MethodVirtualizer(NeonVMRuntime runtime)
         {
             Runtime = runtime;
         }
 
-        protected DarksVMRuntime Runtime
+        protected NeonVMRuntime Runtime
         {
             get;
         }

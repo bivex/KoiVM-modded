@@ -11,15 +11,15 @@ namespace KoiVM.Runtime.OpCodes
 {
     internal class SindByte : IOpCode
     {
-        public byte Code => DarksVMConstants.OP_SIND_BYTE;
+        public byte Code => NeonVMConstants.OP_SIND_BYTE;
 
-        public unsafe void Load(DarksVMContext ctx, out ExecutionState state)
+        public unsafe void Load(NeonVMContext ctx, out ExecutionState state)
         {
-            var sp = ctx.Registers[DarksVMConstants.REG_SP].U4;
+            var sp = ctx.Registers[NeonVMConstants.REG_SP].U4;
             var adrSlot = ctx.Stack[sp--];
             var valSlot = ctx.Stack[sp--];
             ctx.Stack.SetTopPosition(sp);
-            ctx.Registers[DarksVMConstants.REG_SP].U4 = sp;
+            ctx.Registers[NeonVMConstants.REG_SP].U4 = sp;
 
             if(adrSlot.O is IReference)
             {
@@ -37,15 +37,15 @@ namespace KoiVM.Runtime.OpCodes
 
     internal class SindWord : IOpCode
     {
-        public byte Code => DarksVMConstants.OP_SIND_WORD;
+        public byte Code => NeonVMConstants.OP_SIND_WORD;
 
-        public unsafe void Load(DarksVMContext ctx, out ExecutionState state)
+        public unsafe void Load(NeonVMContext ctx, out ExecutionState state)
         {
-            var sp = ctx.Registers[DarksVMConstants.REG_SP].U4;
+            var sp = ctx.Registers[NeonVMConstants.REG_SP].U4;
             var adrSlot = ctx.Stack[sp--];
             var valSlot = ctx.Stack[sp--];
             ctx.Stack.SetTopPosition(sp);
-            ctx.Registers[DarksVMConstants.REG_SP].U4 = sp;
+            ctx.Registers[NeonVMConstants.REG_SP].U4 = sp;
 
             if(adrSlot.O is IReference)
             {
@@ -63,15 +63,15 @@ namespace KoiVM.Runtime.OpCodes
 
     internal class SindDword : IOpCode
     {
-        public byte Code => DarksVMConstants.OP_SIND_DWORD;
+        public byte Code => NeonVMConstants.OP_SIND_DWORD;
 
-        public unsafe void Load(DarksVMContext ctx, out ExecutionState state)
+        public unsafe void Load(NeonVMContext ctx, out ExecutionState state)
         {
-            var sp = ctx.Registers[DarksVMConstants.REG_SP].U4;
+            var sp = ctx.Registers[NeonVMConstants.REG_SP].U4;
             var adrSlot = ctx.Stack[sp--];
             var valSlot = ctx.Stack[sp--];
             ctx.Stack.SetTopPosition(sp);
-            ctx.Registers[DarksVMConstants.REG_SP].U4 = sp;
+            ctx.Registers[NeonVMConstants.REG_SP].U4 = sp;
 
             if(adrSlot.O is IReference)
             {
@@ -89,15 +89,15 @@ namespace KoiVM.Runtime.OpCodes
 
     internal class SindQword : IOpCode
     {
-        public byte Code => DarksVMConstants.OP_SIND_QWORD;
+        public byte Code => NeonVMConstants.OP_SIND_QWORD;
 
-        public unsafe void Load(DarksVMContext ctx, out ExecutionState state)
+        public unsafe void Load(NeonVMContext ctx, out ExecutionState state)
         {
-            var sp = ctx.Registers[DarksVMConstants.REG_SP].U4;
+            var sp = ctx.Registers[NeonVMConstants.REG_SP].U4;
             var adrSlot = ctx.Stack[sp--];
             var valSlot = ctx.Stack[sp--];
             ctx.Stack.SetTopPosition(sp);
-            ctx.Registers[DarksVMConstants.REG_SP].U4 = sp;
+            ctx.Registers[NeonVMConstants.REG_SP].U4 = sp;
 
             if(adrSlot.O is IReference)
             {
@@ -115,15 +115,15 @@ namespace KoiVM.Runtime.OpCodes
 
     internal class SindObject : IOpCode
     {
-        public byte Code => DarksVMConstants.OP_SIND_OBJECT;
+        public byte Code => NeonVMConstants.OP_SIND_OBJECT;
 
-        public void Load(DarksVMContext ctx, out ExecutionState state)
+        public void Load(NeonVMContext ctx, out ExecutionState state)
         {
-            var sp = ctx.Registers[DarksVMConstants.REG_SP].U4;
+            var sp = ctx.Registers[NeonVMConstants.REG_SP].U4;
             var adrSlot = ctx.Stack[sp--];
             var valSlot = ctx.Stack[sp--];
             ctx.Stack.SetTopPosition(sp);
-            ctx.Registers[DarksVMConstants.REG_SP].U4 = sp;
+            ctx.Registers[NeonVMConstants.REG_SP].U4 = sp;
 
             if(adrSlot.O is IReference) ((IReference) adrSlot.O).SetValue(ctx, valSlot, PointerType.OBJECT);
             else throw new ExecutionEngineException();
@@ -133,15 +133,15 @@ namespace KoiVM.Runtime.OpCodes
 
     internal class SindPtr : IOpCode
     {
-        public byte Code => DarksVMConstants.OP_SIND_PTR;
+        public byte Code => NeonVMConstants.OP_SIND_PTR;
 
-        public unsafe void Load(DarksVMContext ctx, out ExecutionState state)
+        public unsafe void Load(NeonVMContext ctx, out ExecutionState state)
         {
-            var sp = ctx.Registers[DarksVMConstants.REG_SP].U4;
+            var sp = ctx.Registers[NeonVMConstants.REG_SP].U4;
             var adrSlot = ctx.Stack[sp--];
             var valSlot = ctx.Stack[sp--];
             ctx.Stack.SetTopPosition(sp);
-            ctx.Registers[DarksVMConstants.REG_SP].U4 = sp;
+            ctx.Registers[NeonVMConstants.REG_SP].U4 = sp;
 
             if(adrSlot.O is IReference)
             {

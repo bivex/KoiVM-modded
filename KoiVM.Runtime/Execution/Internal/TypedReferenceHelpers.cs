@@ -95,7 +95,7 @@ namespace KoiVM.Runtime.Execution.Internal
             ((Set) helper)(value, typedRef);
         }
 
-        public static void GetFieldAddr(DarksVMContext context, object obj, FieldInfo field, TypedRefPtr typedRef)
+        public static void GetFieldAddr(NeonVMContext context, object obj, FieldInfo field, TypedRefPtr typedRef)
         {
             var helper = fieldAddrHelpers[field];
             if(helper == null)

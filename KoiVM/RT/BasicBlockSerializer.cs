@@ -12,9 +12,9 @@ namespace KoiVM.RT
 {
     internal class BasicBlockSerializer
     {
-        private readonly DarksVMRuntime rt;
+        private readonly NeonVMRuntime rt;
 
-        public BasicBlockSerializer(DarksVMRuntime rt)
+        public BasicBlockSerializer(NeonVMRuntime rt)
         {
             this.rt = rt;
         }

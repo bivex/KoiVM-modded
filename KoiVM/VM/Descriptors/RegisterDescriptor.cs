@@ -9,13 +9,13 @@ namespace KoiVM.VM
 {
     public class RegisterDescriptor
     {
-        private readonly byte[] regOrder = Enumerable.Range(0, (int) DarksVMRegisters.Max).Select(x => (byte) x).ToArray();
+        private readonly byte[] regOrder = Enumerable.Range(0, (int) NeonVMRegisters.Max).Select(x => (byte) x).ToArray();
 
         public RegisterDescriptor(Random random)
         {
             random.Shuffle(regOrder);
         }
 
-        public byte this[DarksVMRegisters reg] => regOrder[(int) reg];
+        public byte this[NeonVMRegisters reg] => regOrder[(int) reg];
     }
 }

@@ -24,17 +24,17 @@ namespace KoiVM.Runtime.Execution
             _typedRef = *(PseudoTypedRef*) &typedRef;
         }
 
-        public DarksVMSlot GetValue(DarksVMContext ctx, PointerType type)
+        public NeonVMSlot GetValue(NeonVMContext ctx, PointerType type)
         {
             TypedReference typedRef;
             if(_ptr != null)
                 *&typedRef = *(TypedReference*) _ptr.Value;
             else
                 *(PseudoTypedRef*) &typedRef = _typedRef;
-            return DarksVMSlot.FromObject(TypedReference.ToObject(typedRef), __reftype(typedRef));
+            return NeonVMSlot.FromObject(TypedReference.ToObject(typedRef), __reftype(typedRef));
         }
 
-        public void SetValue(DarksVMContext ctx, DarksVMSlot slot, PointerType type)
+        public void SetValue(NeonVMContext ctx, NeonVMSlot slot, PointerType type)
         {
             TypedReference typedRef;
             if(_ptr != null)
@@ -57,7 +57,7 @@ namespace KoiVM.Runtime.Execution
             return this;
         }
 
-        public void ToTypedReference(DarksVMContext ctx, TypedRefPtr typedRef, Type type)
+        public void ToTypedReference(NeonVMContext ctx, TypedRefPtr typedRef, Type type)
         {
             if(_ptr != null)
                 *(TypedReference*) typedRef = *(TypedReference*) _ptr.Value;

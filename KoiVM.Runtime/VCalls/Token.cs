@@ -12,11 +12,11 @@ namespace KoiVM.Runtime.VCalls
 {
     internal class Token : IVCall
     {
-        public byte Code => DarksVMConstants.VCALL_TOKEN;
+        public byte Code => NeonVMConstants.VCALL_TOKEN;
 
-        public void Load(DarksVMContext ctx, out ExecutionState state)
+        public void Load(NeonVMContext ctx, out ExecutionState state)
         {
-            var sp = ctx.Registers[DarksVMConstants.REG_SP].U4;
+            var sp = ctx.Registers[NeonVMConstants.REG_SP].U4;
             var typeSlot = ctx.Stack[sp];
 
             var reference = ctx.Instance.Data.LookupReference(typeSlot.U4);

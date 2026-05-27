@@ -28,12 +28,12 @@ namespace KoiVM.VMIL
                 }
         }
 
-        public ILTranslator(DarksVMRuntime runtime)
+        public ILTranslator(NeonVMRuntime runtime)
         {
             Runtime = runtime;
         }
 
-        public DarksVMRuntime Runtime
+        public NeonVMRuntime Runtime
         {
             get;
         }

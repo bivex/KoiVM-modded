@@ -49,17 +49,17 @@ namespace KoiVM.RT.Mutation
             var instrs = cctor.Body.Instructions;
             instrs.Clear();
 
-            for(var i = 0; i < (int) DarksVMRegisters.Max; i++)
+            for(var i = 0; i < (int) NeonVMRegisters.Max; i++)
             {
-                var reg = (DarksVMRegisters) i;
+                var reg = (NeonVMRegisters) i;
                 var regId = desc.Architecture.Registers[reg];
                 var regField = reg.ToString();
                 AddField(regField, regId);
             }
 
-            for(var i = 0; i < (int)DarksVMFlags.Max; i++)
+            for(var i = 0; i < (int)NeonVMFlags.Max; i++)
             {
-                var fl = (DarksVMFlags) i;
+                var fl = (NeonVMFlags) i;
                 var flId = desc.Architecture.Flags[fl];
                 var flField = fl.ToString();
                 AddField(flField, 1 << flId);
@@ -73,9 +73,9 @@ namespace KoiVM.RT.Mutation
                 AddField(opField, opId);
             }
 
-            for(var i = 0; i < (int) DarksVMCalls.Max; i++)
+            for(var i = 0; i < (int) NeonVMCalls.Max; i++)
             {
-                var vc = (DarksVMCalls) i;
+                var vc = (NeonVMCalls) i;
                 var vcId = desc.Runtime.VMCall[vc];
                 var vcField = vc.ToString();
                 AddField(vcField, vcId);

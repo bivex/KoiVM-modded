@@ -7,7 +7,7 @@ using System.Reflection;
 
 namespace What_a_great_VM
 {
-    public class DarksVM
+    public class NeonVM
     {
         public static Module a;
 
@@ -46,7 +46,7 @@ namespace What_a_great_VM
             if (s3 == s3)
                 a = Type.GetTypeFromHandle(type).Module;
 
-            return DarksVMInstance.Instance(s1, a).Load(s2, s3, id, args);
+            return NeonVMInstance.Instance(s1, a).Load(s2, s3, id, args);
         }
 
         public static unsafe void Load(uint s1, uint id, RuntimeTypeHandle type, uint s2, uint s3, void*[] typedRefs, void* retTypedRef)
@@ -83,7 +83,7 @@ namespace What_a_great_VM
             if (s3 == s3)
                 a = Type.GetTypeFromHandle(type).Module;
 
-            DarksVMInstance.Instance(s1, a).Load(s2, s3, id, typedRefs, retTypedRef);
+            NeonVMInstance.Instance(s1, a).Load(s2, s3, id, typedRefs, retTypedRef);
         }
 
         internal static object OpenIntance(int c, ulong d, uint e, uint j, object[] h)
@@ -118,7 +118,7 @@ namespace What_a_great_VM
                 s3 = (v >> 6) | (f << 9);
             }
 
-            return DarksVMInstance.Instance(b, c).Load(d, e, j, h);
+            return NeonVMInstance.Instance(b, c).Load(d, e, j, h);
         }
 
         internal static unsafe void OpenIntance(int c, ulong d, uint e, uint j, void*[] h,
@@ -154,7 +154,7 @@ namespace What_a_great_VM
                 s3 = (v >> 6) | (f << 9);
             }
 
-            DarksVMInstance.Instance(b, c).Load(d, e, j, h, m);
+            NeonVMInstance.Instance(b, c).Load(d, e, j, h, m);
         }
     }
 }

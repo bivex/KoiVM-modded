@@ -9,14 +9,14 @@ namespace KoiVM.VM
 {
     public class FlagDescriptor
     {
-        private readonly int[] flagOrder = Enumerable.Range(0, (int)DarksVMFlags.Max).ToArray();
+        private readonly int[] flagOrder = Enumerable.Range(0, (int)NeonVMFlags.Max).ToArray();
 
         public FlagDescriptor(Random random)
         {
             random.Shuffle(flagOrder);
         }
 
-        public int this[DarksVMFlags flag] => flagOrder[(int) flag];
+        public int this[NeonVMFlags flag] => flagOrder[(int) flag];
 
         public int OVERFLOW => flagOrder[0];
 

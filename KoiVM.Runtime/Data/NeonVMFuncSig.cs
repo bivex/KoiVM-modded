@@ -8,7 +8,7 @@ using System.Reflection;
 
 namespace KoiVM.Runtime.Data
 {
-    internal class DarksVMFuncSig
+    internal class NeonVMFuncSig
     {
         private readonly int[] paramToks;
         private readonly int retTok;
@@ -19,7 +19,7 @@ namespace KoiVM.Runtime.Data
         private Type[] paramTypes;
         private Type retType;
 
-        public unsafe DarksVMFuncSig(ref byte* ptr, Module module)
+        public unsafe NeonVMFuncSig(ref byte* ptr, Module module)
         {
             this.module = module;
 

@@ -6,7 +6,7 @@ using dnlib.DotNet;
 
 namespace KoiVM
 {
-    public interface IDarksVMSettings
+    public interface INeonVMSettings
     {
         int Seed
         {

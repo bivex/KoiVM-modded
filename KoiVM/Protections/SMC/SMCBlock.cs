@@ -33,7 +33,7 @@ namespace KoiVM.Protections.SMC
             set;
         }
 
-        public override IKoiChunk CreateChunk(DarksVMRuntime rt, MethodDef method)
+        public override IKoiChunk CreateChunk(NeonVMRuntime rt, MethodDef method)
         {
             return new SMCBlockChunk(rt, method, this);
         }
@@ -41,7 +41,7 @@ namespace KoiVM.Protections.SMC
 
     internal class SMCBlockChunk : BasicBlockChunk, IKoiChunk
     {
-        public SMCBlockChunk(DarksVMRuntime rt, MethodDef method, SMCBlock block)
+        public SMCBlockChunk(NeonVMRuntime rt, MethodDef method, SMCBlock block)
             : base(rt, method, block)
         {
             block.CounterOperand.Value = Length + 1;
@@ -81,7 +81,7 @@ namespace KoiVM.Protections.SMC
             set;
         }
 
-        public override uint Resolve(DarksVMRuntime runtime)
+        public override uint Resolve(NeonVMRuntime runtime)
         {
             return base.Resolve(runtime) ^ Key;
         }

@@ -11,9 +11,9 @@ using System.Text;
 
 namespace KoiVM.Runtime.Data
 {
-    internal unsafe class DarksVMDataInitializer
+    internal unsafe class NeonVMDataInitializer
     {
-        internal static DarksVMData GetData(Module module)
+        internal static NeonVMData GetData(Module module)
         {
             if(!Platform.LittleEndian)
                 throw new PlatformNotSupportedException();
@@ -26,14 +26,14 @@ namespace KoiVM.Runtime.Data
             if(Type.GetType("Mono.Runtime") != null || !Platform.IsWindows)
             {
                 if(isFlat)
-                    return new DarksVMData(module, GetKoiStreamFlat((byte*) Marshal.GetHINSTANCE(module)));
-                return new DarksVMData(module, GetKoiStreamFromFile(fqn));
+                    return new NeonVMData(module, GetKoiStreamFlat((byte*) Marshal.GetHINSTANCE(module)));
+                return new NeonVMData(module, GetKoiStreamFromFile(fqn));
             }
 
             var moduleBase = (byte*) Marshal.GetHINSTANCE(module);
             if(isFlat)
-                return new DarksVMData(module, GetKoiStreamFlat(moduleBase));
-            return new DarksVMData(module, GetKoiStreamMapped(moduleBase));
+                return new NeonVMData(module, GetKoiStreamFlat(moduleBase));
+            return new NeonVMData(module, GetKoiStreamMapped(moduleBase));
         }
 
         private static void* GetKoiStreamFromFile(string filePath)
@@ -117,7 +117,7 @@ namespace KoiVM.Runtime.Data
                     if(*mdHdrPtr == 0)
                         break;
                 }
-                if(streamName.ToString() == "#DarksVM")
+                if(streamName.ToString() == "#NeonVM")
                 {
                     void* result = AllocateKoiFromBytes(moduleBase + mdHdr + offset, len);
                     pinned.Free();
@@ -178,7 +178,7 @@ namespace KoiVM.Runtime.Data
                     if(*mdHdr == 0)
                         break;
                 }
-                if(streamName.ToString() == "#DarksVM")
+                if(streamName.ToString() == "#NeonVM")
                     return AllocateKoi(moduleBase + *(uint*) (mdDir + 8) + offset, len);
             }
             return null;
@@ -262,7 +262,7 @@ namespace KoiVM.Runtime.Data
                     if(*mdHdrPtr == 0)
                         break;
                 }
-                if(streamName.ToString() == "#DarksVM")
+                if(streamName.ToString() == "#NeonVM")
                     return AllocateKoi(moduleBase + mdHdr + offset, len);
             }
             return null;

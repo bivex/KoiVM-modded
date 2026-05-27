@@ -7,9 +7,9 @@ using System.Reflection;
 [assembly: AssemblyTitle("KoiVM virtualizer")]
 [assembly: AssemblyDescription("KoiVM virtualizer")]
 
-[assembly: AssemblyProduct("DarksVM - KoiVM modded")]
+[assembly: AssemblyProduct("NeonVM - KoiVM modded")]
 [assembly: AssemblyCompany("d4rk.fr")]
-[assembly: AssemblyCopyright("Copyright (C) darkshoz 2019")]
+[assembly: AssemblyCopyright("Copyright (C) neonhoz 2019")]
 
 #if DEBUG
 

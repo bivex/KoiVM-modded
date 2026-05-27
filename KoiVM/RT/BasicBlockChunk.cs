@@ -15,9 +15,9 @@ namespace KoiVM.RT
     internal class BasicBlockChunk : IKoiChunk
     {
         private readonly MethodDef method;
-        private readonly DarksVMRuntime rt;
+        private readonly NeonVMRuntime rt;
 
-        public BasicBlockChunk(DarksVMRuntime rt, MethodDef method, ILBlock block)
+        public BasicBlockChunk(NeonVMRuntime rt, MethodDef method, ILBlock block)
         {
             this.rt = rt;
             this.method = method;

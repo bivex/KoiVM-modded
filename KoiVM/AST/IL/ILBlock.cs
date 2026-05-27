@@ -15,7 +15,7 @@ namespace KoiVM.AST.IL
         {
         }
 
-        public virtual IKoiChunk CreateChunk(DarksVMRuntime rt, MethodDef method)
+        public virtual IKoiChunk CreateChunk(NeonVMRuntime rt, MethodDef method)
         {
             return new BasicBlockChunk(rt, method, this);
         }

@@ -10,14 +10,14 @@ namespace KoiVM.Runtime.OpCodes
 {
     internal class Vcall : IOpCode
     {
-        public byte Code => DarksVMConstants.OP_VCALL;
+        public byte Code => NeonVMConstants.OP_VCALL;
 
-        public void Load(DarksVMContext ctx, out ExecutionState state)
+        public void Load(NeonVMContext ctx, out ExecutionState state)
         {
-            var sp = ctx.Registers[DarksVMConstants.REG_SP].U4;
+            var sp = ctx.Registers[NeonVMConstants.REG_SP].U4;
             var slot = ctx.Stack[sp];
             ctx.Stack.SetTopPosition(--sp);
-            ctx.Registers[DarksVMConstants.REG_SP].U4 = sp;
+            ctx.Registers[NeonVMConstants.REG_SP].U4 = sp;
 
             var vCall = VCallMap.Lookup(slot.U1);
             vCall.Load(ctx, out state);

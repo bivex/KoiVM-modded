@@ -26,7 +26,7 @@ namespace KoiVM.AST.IL
             set;
         }
 
-        public virtual uint Resolve(DarksVMRuntime runtime)
+        public virtual uint Resolve(NeonVMRuntime runtime)
         {
             var relBase = Base.Offset;
             if(Base is ILInstruction)

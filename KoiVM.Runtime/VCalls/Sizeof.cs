@@ -11,14 +11,14 @@ namespace KoiVM.Runtime.VCalls
 {
     internal class Sizeof : IVCall
     {
-        public byte Code => DarksVMConstants.VCALL_SIZEOF;
+        public byte Code => NeonVMConstants.VCALL_SIZEOF;
 
-        public void Load(DarksVMContext ctx, out ExecutionState state)
+        public void Load(NeonVMContext ctx, out ExecutionState state)
         {
-            var sp = ctx.Registers[DarksVMConstants.REG_SP].U4;
-            var bp = ctx.Registers[DarksVMConstants.REG_BP].U4;
+            var sp = ctx.Registers[NeonVMConstants.REG_SP].U4;
+            var bp = ctx.Registers[NeonVMConstants.REG_BP].U4;
             var type = (Type) ctx.Instance.Data.LookupReference(ctx.Stack[sp].U4);
-            ctx.Stack[sp] = new DarksVMSlot
+            ctx.Stack[sp] = new NeonVMSlot
             {
                 U4 = (uint) SizeOfHelper.SizeOf(type)
             };

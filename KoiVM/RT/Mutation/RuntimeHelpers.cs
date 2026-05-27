@@ -18,11 +18,11 @@ namespace KoiVM.RT.Mutation
         private RTConstants constants;
 
         private MethodDef methodINIT;
-        private readonly DarksVMRuntime rt;
+        private readonly NeonVMRuntime rt;
         private TypeDef rtHelperType;
         private readonly ModuleDef rtModule;
 
-        public RuntimeHelpers(RTConstants constants, DarksVMRuntime rt, ModuleDef rtModule)
+        public RuntimeHelpers(RTConstants constants, NeonVMRuntime rt, ModuleDef rtModule)
         {
             this.rt = rt;
             this.rtModule = rtModule;
@@ -62,7 +62,7 @@ namespace KoiVM.RT.Mutation
 
             var retnBlock = new BasicBlock<IRInstrList>(0, new IRInstrList
             {
-                new IRInstruction(IROpCode.VCALL, IRConstant.FromI4(rt.Descriptor.Runtime.VMCall[DarksVMCalls.EXIT]))
+                new IRInstruction(IROpCode.VCALL, IRConstant.FromI4(rt.Descriptor.Runtime.VMCall[NeonVMCalls.EXIT]))
             });
             scope.Content.Add(initBlock);
 
@@ -82,14 +82,14 @@ namespace KoiVM.RT.Mutation
             });
         }
 
-        private void AddHelper(DarksVMMethodInfo info, MethodDef method, ILBlock block)
+        private void AddHelper(NeonVMMethodInfo info, MethodDef method, ILBlock block)
         {
             var helperScope = new ScopeBlock();
             block.Id = 0;
             helperScope.Content.Add(block);
             if(info != null)
             {
-                var helperInfo = new DarksVMMethodInfo();
+                var helperInfo = new NeonVMMethodInfo();
                 var keys = info.BlockKeys[block];
                 helperInfo.RootScope = helperScope;
                 helperInfo.EntryKey = keys.EntryKey;

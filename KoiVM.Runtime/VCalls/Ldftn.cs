@@ -13,11 +13,11 @@ namespace KoiVM.Runtime.VCalls
 {
     internal class Ldftn : IVCall
     {
-        public byte Code => DarksVMConstants.VCALL_LDFTN;
+        public byte Code => NeonVMConstants.VCALL_LDFTN;
 
-        public void Load(DarksVMContext ctx, out ExecutionState state)
+        public void Load(NeonVMContext ctx, out ExecutionState state)
         {
-            var sp = ctx.Registers[DarksVMConstants.REG_SP].U4;
+            var sp = ctx.Registers[NeonVMConstants.REG_SP].U4;
             var methodSlot = ctx.Stack[sp--];
             var objectSlot = ctx.Stack[sp];
 
@@ -44,7 +44,7 @@ namespace KoiVM.Runtime.VCalls
                         break;
                     }
 
-                ctx.Stack[sp] = new DarksVMSlot {U8 = (ulong) found.MethodHandle.GetFunctionPointer()};
+                ctx.Stack[sp] = new NeonVMSlot {U8 = (ulong) found.MethodHandle.GetFunctionPointer()};
             }
             if(objectSlot.U8 != 0)
             {
@@ -52,17 +52,17 @@ namespace KoiVM.Runtime.VCalls
                 var entryKey = ctx.Stack[--sp].U4;
                 var codeAdr = methodSlot.U8;
                 var sig = ctx.Instance.Data.LookupExport(objectSlot.U4).Signature;
-                var ptr = DarksVMTrampoline.CreateTrampoline(ctx.Instance.Data.Module, codeAdr, entryKey, sig, objectSlot.U4);
-                ctx.Stack[sp] = new DarksVMSlot {U8 = (ulong) ptr};
+                var ptr = NeonVMTrampoline.CreateTrampoline(ctx.Instance.Data.Module, codeAdr, entryKey, sig, objectSlot.U4);
+                ctx.Stack[sp] = new NeonVMSlot {U8 = (ulong) ptr};
             }
             else
             {
                 var method = (MethodBase) ctx.Instance.Data.LookupReference(methodSlot.U4);
-                ctx.Stack[sp] = new DarksVMSlot {U8 = (ulong) method.MethodHandle.GetFunctionPointer()};
+                ctx.Stack[sp] = new NeonVMSlot {U8 = (ulong) method.MethodHandle.GetFunctionPointer()};
             }
 
             ctx.Stack.SetTopPosition(sp);
-            ctx.Registers[DarksVMConstants.REG_SP].U4 = sp;
+            ctx.Registers[NeonVMConstants.REG_SP].U4 = sp;
             state = ExecutionState.Next;
         }
     }

@@ -9,11 +9,11 @@ namespace KoiVM.Runtime.VCalls
 {
     internal class Rangechk : IVCall
     {
-        public byte Code => DarksVMConstants.VCALL_RANGECHK;
+        public byte Code => NeonVMConstants.VCALL_RANGECHK;
 
-        public void Load(DarksVMContext ctx, out ExecutionState state)
+        public void Load(NeonVMContext ctx, out ExecutionState state)
         {
-            var sp = ctx.Registers[DarksVMConstants.REG_SP].U4;
+            var sp = ctx.Registers[NeonVMConstants.REG_SP].U4;
             var valueSlot = ctx.Stack[sp--];
             var maxSlot = ctx.Stack[sp--];
             var minSlot = ctx.Stack[sp];
@@ -23,7 +23,7 @@ namespace KoiVM.Runtime.VCalls
             ctx.Stack[sp] = valueSlot;
 
             ctx.Stack.SetTopPosition(sp);
-            ctx.Registers[DarksVMConstants.REG_SP].U4 = sp;
+            ctx.Registers[NeonVMConstants.REG_SP].U4 = sp;
             state = ExecutionState.Next;
         }
     }

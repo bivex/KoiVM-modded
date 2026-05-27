@@ -12,15 +12,15 @@ namespace KoiVM.RT.Mutation
     [Obfuscation(Exclude = false, Feature = "+koi;-ref proxy")]
     internal class RTMap
     {
-        public static readonly string DarksVMEntry = "What_a_great_VM.DarksVM";
-        public static readonly string DarksVMRun = "Load";
-        public static readonly string DarksVMDispatcher = "KoiVM.Runtime.Execution.DarksVMDispatcher";
-        public static readonly string DarksVMDispatcherDothrow = "DoThrow";
-        public static readonly string DarksVMDispatcherThrow = "Throw";
-        public static readonly string DarksVMDispatcherGetIP = "GetIP";
-        public static readonly string DarksVMDispatcherStackwalk = "StackWalk";
+        public static readonly string NeonVMEntry = "What_a_great_VM.NeonVM";
+        public static readonly string NeonVMRun = "Load";
+        public static readonly string NeonVMDispatcher = "KoiVM.Runtime.Execution.NeonVMDispatcher";
+        public static readonly string NeonVMDispatcherDothrow = "DoThrow";
+        public static readonly string NeonVMDispatcherThrow = "Throw";
+        public static readonly string NeonVMDispatcherGetIP = "GetIP";
+        public static readonly string NeonVMDispatcherStackwalk = "StackWalk";
 
-        public static readonly string kraDConstants = "KoiVM.Runtime.Dynamic.DarksVMConstants";
+        public static readonly string kraDConstants = "KoiVM.Runtime.Dynamic.NeonVMConstants";
 
         public static readonly Dictionary<string, string> VMConstMap;
 

@@ -14,7 +14,7 @@ namespace KoiVM.RT
     {
         private byte[] data;
 
-        public HeaderChunk(DarksVMRuntime rt)
+        public HeaderChunk(NeonVMRuntime rt)
         {
             Length = ComputeLength(rt);
         }
@@ -74,7 +74,7 @@ namespace KoiVM.RT
             }
         }
 
-        private uint ComputeLength(DarksVMRuntime rt)
+        private uint ComputeLength(NeonVMRuntime rt)
         {
             uint len = 16;
             foreach(var reference in rt.Descriptor.Data.refMap) len += Utils.GetCompressedUIntLength(reference.Value) + GetCodedLen(reference.Key.MDToken);
@@ -100,7 +100,7 @@ namespace KoiVM.RT
             return len;
         }
 
-        internal void WriteData(DarksVMRuntime rt)
+        internal void WriteData(NeonVMRuntime rt)
         {
             var stream = new MemoryStream();
             var writer = new BinaryWriter(stream);

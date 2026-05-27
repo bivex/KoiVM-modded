@@ -9,7 +9,7 @@ namespace KoiVM.RT
 {
     public class JumpTableChunk : IKoiChunk
     {
-        internal DarksVMRuntime runtime;
+        internal NeonVMRuntime runtime;
 
         public JumpTableChunk(ILJumpTable table)
         {

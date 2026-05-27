@@ -15,7 +15,7 @@ using KoiVM.VMIL;
 namespace KoiVM
 {
     [Obfuscation(Exclude = false, Feature = "+koi;-ref proxy")]
-    public class Virtualizer : IDarksVMSettings
+    public class Virtualizer : INeonVMSettings
     {
         private readonly bool debug;
         private readonly HashSet<MethodDef> doInstantiation = new HashSet<MethodDef>();
@@ -37,13 +37,13 @@ namespace KoiVM
 
         public ModuleDef RuntimeModule => Runtime.Module;
 
-        public DarksVMRuntime Runtime
+        public NeonVMRuntime Runtime
         {
             get;
             set;
         }
 
-        bool IDarksVMSettings.IsExported(MethodDef method)
+        bool INeonVMSettings.IsExported(MethodDef method)
         {
             bool ret;
             if(!methodList.TryGetValue(method, out ret))
@@ -51,14 +51,14 @@ namespace KoiVM
             return ret;
         }
 
-        bool IDarksVMSettings.IsVirtualized(MethodDef method)
+        bool INeonVMSettings.IsVirtualized(MethodDef method)
         {
             return methodList.ContainsKey(method);
         }
 
-        int IDarksVMSettings.Seed => seed;
+        int INeonVMSettings.Seed => seed;
 
-        bool IDarksVMSettings.IsDebug => debug;
+        bool INeonVMSettings.IsDebug => debug;
 
         public bool ExportDbgInfo
         {
@@ -74,7 +74,7 @@ namespace KoiVM
 
         public void Initialize(ModuleDef runtimeLib)
         {
-            Runtime = new DarksVMRuntime(this, runtimeLib);
+            Runtime = new NeonVMRuntime(this, runtimeLib);
             runtimeName = runtimeLib.Assembly.Name;
             vr = new MethodVirtualizer(Runtime);
         }

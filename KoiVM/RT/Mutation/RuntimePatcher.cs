@@ -18,13 +18,13 @@ namespace KoiVM.RT.Mutation
 
         private static void PatchDispatcher(ModuleDef runtime, bool debug, bool stackwalk)
         {
-            var dispatcher = runtime.Find(RTMap.DarksVMDispatcher, true);
-            var dispatcherRun = dispatcher.FindMethod(RTMap.DarksVMRun);
+            var dispatcher = runtime.Find(RTMap.NeonVMDispatcher, true);
+            var dispatcherRun = dispatcher.FindMethod(RTMap.NeonVMRun);
             foreach(var eh in dispatcherRun.Body.ExceptionHandlers)
                 if(eh.HandlerType == ExceptionHandlerType.Catch)
                     eh.CatchType = runtime.CorLibTypes.Object.ToTypeDefOrRef();
-            PatchDoThrow(dispatcher.FindMethod(RTMap.DarksVMDispatcherDothrow).Body, debug, stackwalk);
-            dispatcher.Methods.Remove(dispatcher.FindMethod(RTMap.DarksVMDispatcherThrow));
+            PatchDoThrow(dispatcher.FindMethod(RTMap.NeonVMDispatcherDothrow).Body, debug, stackwalk);
+            dispatcher.Methods.Remove(dispatcher.FindMethod(RTMap.NeonVMDispatcherThrow));
         }
 
         private static void PatchDoThrow(CilBody body, bool debug, bool stackwalk)
@@ -32,8 +32,8 @@ namespace KoiVM.RT.Mutation
             for(var i = 0; i < body.Instructions.Count; i++)
             {
                 var method = body.Instructions[i].Operand as IMethod;
-                if(method != null && method.Name == RTMap.DarksVMDispatcherThrow) body.Instructions.RemoveAt(i);
-                else if(method != null && method.Name == RTMap.DarksVMDispatcherGetIP)
+                if(method != null && method.Name == RTMap.NeonVMDispatcherThrow) body.Instructions.RemoveAt(i);
+                else if(method != null && method.Name == RTMap.NeonVMDispatcherGetIP)
                     if(!debug)
                     {
                         body.Instructions.RemoveAt(i);
@@ -44,13 +44,13 @@ namespace KoiVM.RT.Mutation
                     else if(stackwalk)
                     {
                         var def = method.ResolveMethodDefThrow();
-                        body.Instructions[i].Operand = def.DeclaringType.FindMethod(RTMap.DarksVMDispatcherStackwalk);
+                        body.Instructions[i].Operand = def.DeclaringType.FindMethod(RTMap.NeonVMDispatcherStackwalk);
                         def.DeclaringType.Methods.Remove(def);
                     }
                     else
                     {
                         var def = method.ResolveMethodDefThrow();
-                        def = def.DeclaringType.FindMethod(RTMap.DarksVMDispatcherStackwalk);
+                        def = def.DeclaringType.FindMethod(RTMap.NeonVMDispatcherStackwalk);
                         def.DeclaringType.Methods.Remove(def);
                     }
             }

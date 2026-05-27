@@ -18,12 +18,12 @@ namespace KoiVM.Runtime.Execution
             this.ptr = ptr;
         }
 
-        public DarksVMSlot GetValue(DarksVMContext ctx, PointerType type)
+        public NeonVMSlot GetValue(NeonVMContext ctx, PointerType type)
         {
             throw new NotSupportedException();
         }
 
-        public void SetValue(DarksVMContext ctx, DarksVMSlot slot, PointerType type)
+        public void SetValue(NeonVMContext ctx, NeonVMSlot slot, PointerType type)
         {
             throw new NotSupportedException();
         }
@@ -38,7 +38,7 @@ namespace KoiVM.Runtime.Execution
             throw new NotSupportedException();
         }
 
-        public void ToTypedReference(DarksVMContext ctx, TypedRefPtr typedRef, Type type)
+        public void ToTypedReference(NeonVMContext ctx, TypedRefPtr typedRef, Type type)
         {
             TypedReferenceHelpers.MakeTypedRef(ptr, typedRef, type);
         }

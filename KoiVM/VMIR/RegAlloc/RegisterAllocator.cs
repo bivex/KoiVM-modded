@@ -122,12 +122,12 @@ namespace KoiVM.VMIR.RegAlloc
             return operand;
         }
 
-        private DarksVMRegisters? AllocateVariable(RegisterPool pool, IRVariable var, out StackSlot? stackSlot)
+        private NeonVMRegisters? AllocateVariable(RegisterPool pool, IRVariable var, out StackSlot? stackSlot)
         {
             stackSlot = pool.CheckSpill(var);
             if(stackSlot == null)
             {
-                var allocReg = var.Annotation == null ? (DarksVMRegisters?) null : (DarksVMRegisters) var.Annotation;
+                var allocReg = var.Annotation == null ? (NeonVMRegisters?) null : (NeonVMRegisters) var.Annotation;
                 if(allocReg == null)
                     allocReg = pool.Allocate(var);
                 if(allocReg != null)
@@ -167,12 +167,12 @@ namespace KoiVM.VMIR.RegAlloc
                 set;
             }
 
-            private static DarksVMRegisters ToRegister(int regId)
+            private static NeonVMRegisters ToRegister(int regId)
             {
-                return (DarksVMRegisters) regId;
+                return (NeonVMRegisters) regId;
             }
 
-            private static int FromRegister(DarksVMRegisters reg)
+            private static int FromRegister(NeonVMRegisters reg)
             {
                 return (int) reg;
             }
@@ -186,7 +186,7 @@ namespace KoiVM.VMIR.RegAlloc
                 return pool;
             }
 
-            public DarksVMRegisters? Allocate(IRVariable var)
+            public NeonVMRegisters? Allocate(IRVariable var)
             {
                 for(var i = 0; i < regAlloc.Length; i++)
                     if(regAlloc[i] == null)
@@ -197,7 +197,7 @@ namespace KoiVM.VMIR.RegAlloc
                 return null;
             }
 
-            public void Deallocate(IRVariable var, DarksVMRegisters reg)
+            public void Deallocate(IRVariable var, NeonVMRegisters reg)
             {
                 Debug.Assert(regAlloc[FromRegister(reg)] == var);
                 regAlloc[FromRegister(reg)] = null;

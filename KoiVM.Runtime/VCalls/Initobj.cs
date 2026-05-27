@@ -12,11 +12,11 @@ namespace KoiVM.Runtime.VCalls
 {
     internal class Initobj : IVCall
     {
-        public byte Code => DarksVMConstants.VCALL_INITOBJ;
+        public byte Code => NeonVMConstants.VCALL_INITOBJ;
 
-        public void Load(DarksVMContext ctx, out ExecutionState state)
+        public void Load(NeonVMContext ctx, out ExecutionState state)
         {
-            var sp = ctx.Registers[DarksVMConstants.REG_SP].U4;
+            var sp = ctx.Registers[NeonVMConstants.REG_SP].U4;
             var typeSlot = ctx.Stack[sp--];
             var addrSlot = ctx.Stack[sp--];
 
@@ -24,7 +24,7 @@ namespace KoiVM.Runtime.VCalls
             if(addrSlot.O is IReference)
             {
                 var reference = (IReference) addrSlot.O;
-                var slot = new DarksVMSlot();
+                var slot = new NeonVMSlot();
                 if(type.IsValueType)
                 {
                     object def = null;
@@ -44,7 +44,7 @@ namespace KoiVM.Runtime.VCalls
             }
 
             ctx.Stack.SetTopPosition(sp);
-            ctx.Registers[DarksVMConstants.REG_SP].U4 = sp;
+            ctx.Registers[NeonVMConstants.REG_SP].U4 = sp;
             state = ExecutionState.Next;
         }
     }

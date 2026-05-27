@@ -9,14 +9,14 @@ namespace KoiVM.Runtime.OpCodes
 {
     internal class Call : IOpCode
     {
-        public byte Code => DarksVMConstants.OP_CALL;
+        public byte Code => NeonVMConstants.OP_CALL;
 
-        public void Load(DarksVMContext ctx, out ExecutionState state)
+        public void Load(NeonVMContext ctx, out ExecutionState state)
         {
-            var sp = ctx.Registers[DarksVMConstants.REG_SP].U4;
+            var sp = ctx.Registers[NeonVMConstants.REG_SP].U4;
             var slot = ctx.Stack[sp];
-            ctx.Stack[sp] = ctx.Registers[DarksVMConstants.REG_IP];
-            ctx.Registers[DarksVMConstants.REG_IP].U8 = slot.U8;
+            ctx.Stack[sp] = ctx.Registers[NeonVMConstants.REG_IP];
+            ctx.Registers[NeonVMConstants.REG_IP].U8 = slot.U8;
             state = ExecutionState.Next;
         }
     }

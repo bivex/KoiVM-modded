@@ -17,7 +17,7 @@ namespace KoiVM.ILAST
     {
         private ITransformationHandler[] pipeline;
 
-        public ILASTTransformer(MethodDef method, ScopeBlock rootScope, DarksVMRuntime runtime)
+        public ILASTTransformer(MethodDef method, ScopeBlock rootScope, NeonVMRuntime runtime)
         {
             RootScope = rootScope;
             Method = method;
@@ -37,7 +37,7 @@ namespace KoiVM.ILAST
             get;
         }
 
-        public DarksVMRuntime Runtime
+        public NeonVMRuntime Runtime
         {
             get;
         }

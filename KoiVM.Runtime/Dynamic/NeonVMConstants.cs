@@ -4,7 +4,7 @@
 
 namespace KoiVM.Runtime.Dynamic
 {
-    internal static class DarksVMConstants
+    internal static class NeonVMConstants
     {
         public static byte REG_R0;
         public static byte REG_R1;

@@ -9,21 +9,21 @@ using KoiVM.Runtime.Execution.Internal;
 
 namespace KoiVM.Runtime.Execution
 {
-    internal class DarksVMStack
+    internal class NeonVMStack
     {
         private const int SectionSize = 6; // 1 << 6 = 64
         private const int IndexMask = (1 << SectionSize) - 1;
         private LocallocNode localPool;
 
-        private readonly List<DarksVMSlot[]> sections = new List<DarksVMSlot[]>();
+        private readonly List<NeonVMSlot[]> sections = new List<NeonVMSlot[]>();
         private uint topPos;
 
-        public DarksVMSlot this[uint pos]
+        public NeonVMSlot this[uint pos]
         {
             get
             {
                 if(pos > topPos)
-                    return DarksVMSlot.Null;
+                    return NeonVMSlot.Null;
                 var sectionIndex = pos >> SectionSize;
                 return sections[(int) sectionIndex][pos & IndexMask];
             }
@@ -45,7 +45,7 @@ namespace KoiVM.Runtime.Execution
             if(sectionIndex >= sections.Count)
                 do
                 {
-                    sections.Add(new DarksVMSlot[1 << SectionSize]);
+                    sections.Add(new NeonVMSlot[1 << SectionSize]);
                 } while(sectionIndex >= sections.Count);
             else if(sectionIndex < sections.Count - 2)
                 do
@@ -57,13 +57,13 @@ namespace KoiVM.Runtime.Execution
             var stackIndex = (topPos & IndexMask) + 1;
             var section = sections[(int) sectionIndex];
             while(stackIndex < section.Length && section[stackIndex].O != null)
-                section[stackIndex++] = DarksVMSlot.Null;
+                section[stackIndex++] = NeonVMSlot.Null;
             if(stackIndex == section.Length && sectionIndex + 1 < sections.Count)
             {
                 stackIndex = 0;
                 section = sections[(int) sectionIndex + 1];
                 while(stackIndex < section.Length && section[stackIndex].O != null)
-                    section[stackIndex++] = DarksVMSlot.Null;
+                    section[stackIndex++] = NeonVMSlot.Null;
             }
             this.topPos = topPos;
 
@@ -110,7 +110,7 @@ namespace KoiVM.Runtime.Execution
             localPool = null;
         }
 
-        ~DarksVMStack()
+        ~NeonVMStack()
         {
             FreeAllLocalloc();
         }

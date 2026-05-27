@@ -11,7 +11,7 @@ using KoiVM.Runtime.Data;
 
 namespace KoiVM.Runtime.Execution.Internal
 {
-    internal static class DarksVMTrampoline
+    internal static class NeonVMTrampoline
     {
         private static readonly GetMethodDescriptor getDesc;
         private static readonly MethodInfo entryStubNormal;
@@ -19,9 +19,9 @@ namespace KoiVM.Runtime.Execution.Internal
 
         private static readonly Hashtable trampolines = new Hashtable();
 
-        static DarksVMTrampoline()
+        static NeonVMTrampoline()
         {
-            foreach(var method in typeof(DarksVM).GetMethods(BindingFlags.Static | BindingFlags.NonPublic))
+            foreach(var method in typeof(NeonVM).GetMethods(BindingFlags.Static | BindingFlags.NonPublic))
                 if(method.ReturnType != typeof(void) && method.GetParameters().Length > 4)
                     entryStubNormal = method;
                 else
@@ -30,7 +30,7 @@ namespace KoiVM.Runtime.Execution.Internal
                 typeof(DynamicMethod).GetMethod("GetMethodDescriptor", BindingFlags.Instance | BindingFlags.NonPublic));
         }
 
-        public static IntPtr CreateTrampoline(Module module, ulong codeAdr, uint key, DarksVMFuncSig sig, uint sigId)
+        public static IntPtr CreateTrampoline(Module module, ulong codeAdr, uint key, NeonVMFuncSig sig, uint sigId)
         {
             var dm = trampolines[codeAdr];
             if(dm != null)
@@ -43,15 +43,15 @@ namespace KoiVM.Runtime.Execution.Internal
                     return getDesc((DynamicMethod) dm).GetFunctionPointer();
 
                 if(ShouldBeTyped(sig))
-                    dm = CreateTrampolineTyped(DarksVMInstance.GetModuleId(module), codeAdr, key, sig, sigId);
+                    dm = CreateTrampolineTyped(NeonVMInstance.GetModuleId(module), codeAdr, key, sig, sigId);
                 else
-                    dm = CreateTrampolineNormal(DarksVMInstance.GetModuleId(module), codeAdr, key, sig, sigId);
+                    dm = CreateTrampolineNormal(NeonVMInstance.GetModuleId(module), codeAdr, key, sig, sigId);
                 trampolines[codeAdr] = dm;
                 return getDesc((DynamicMethod) dm).GetFunctionPointer();
             }
         }
 
-        private static bool ShouldBeTyped(DarksVMFuncSig sig)
+        private static bool ShouldBeTyped(NeonVMFuncSig sig)
         {
             foreach(var param in sig.ParamTypes)
                 if(param.IsByRef)
@@ -59,7 +59,7 @@ namespace KoiVM.Runtime.Execution.Internal
             return sig.RetType.IsByRef;
         }
 
-        private static DynamicMethod CreateTrampolineNormal(int moduleId, ulong codeAdr, uint key, DarksVMFuncSig sig, uint sigId)
+        private static DynamicMethod CreateTrampolineNormal(int moduleId, ulong codeAdr, uint key, NeonVMFuncSig sig, uint sigId)
         {
             var dm = new DynamicMethod("", sig.RetType, sig.ParamTypes, Unverifier.Module, true);
 
@@ -94,7 +94,7 @@ namespace KoiVM.Runtime.Execution.Internal
             return dm;
         }
 
-        private static DynamicMethod CreateTrampolineTyped(int moduleId, ulong codeAdr, uint key, DarksVMFuncSig sig, uint sigId)
+        private static DynamicMethod CreateTrampolineTyped(int moduleId, ulong codeAdr, uint key, NeonVMFuncSig sig, uint sigId)
         {
             var dm = new DynamicMethod("", sig.RetType, sig.ParamTypes, Unverifier.Module, true);
 

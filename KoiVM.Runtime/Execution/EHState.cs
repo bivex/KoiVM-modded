@@ -13,7 +13,7 @@
         public EHProcess CurrentProcess;
         public object ExceptionObj;
         public int? HandlerFrame;
-        public DarksVMSlot OldBP;
-        public DarksVMSlot OldSP;
+        public NeonVMSlot OldBP;
+        public NeonVMSlot OldSP;
     }
 }

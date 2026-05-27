@@ -9,7 +9,7 @@ namespace KoiVM.VMIL.Transforms
 {
     public class SaveInfoTransform : ITransform
     {
-        private DarksVMMethodInfo methodInfo;
+        private NeonVMMethodInfo methodInfo;
 
         public void Initialize(ILTransformer tr)
         {

@@ -11,11 +11,11 @@ namespace KoiVM.Runtime.VCalls
 {
     internal class Ldfld : IVCall
     {
-        public byte Code => DarksVMConstants.VCALL_LDFLD;
+        public byte Code => NeonVMConstants.VCALL_LDFLD;
 
-        public void Load(DarksVMContext ctx, out ExecutionState state)
+        public void Load(NeonVMContext ctx, out ExecutionState state)
         {
-            var sp = ctx.Registers[DarksVMConstants.REG_SP].U4;
+            var sp = ctx.Registers[NeonVMConstants.REG_SP].U4;
             var fieldSlot = ctx.Stack[sp--];
             var objSlot = ctx.Stack[sp];
 
@@ -26,7 +26,7 @@ namespace KoiVM.Runtime.VCalls
 
             if(addr)
             {
-                ctx.Stack[sp] = new DarksVMSlot {O = new FieldRef(objSlot.O, field)};
+                ctx.Stack[sp] = new NeonVMSlot {O = new FieldRef(objSlot.O, field)};
             }
             else
             {
@@ -35,11 +35,11 @@ namespace KoiVM.Runtime.VCalls
                     instance = ((IReference) objSlot.O).GetValue(ctx, PointerType.OBJECT).ToObject(field.DeclaringType);
                 else
                     instance = objSlot.ToObject(field.DeclaringType);
-                ctx.Stack[sp] = DarksVMSlot.FromObject(field.GetValue(instance), field.FieldType);
+                ctx.Stack[sp] = NeonVMSlot.FromObject(field.GetValue(instance), field.FieldType);
             }
 
             ctx.Stack.SetTopPosition(sp);
-            ctx.Registers[DarksVMConstants.REG_SP].U4 = sp;
+            ctx.Registers[NeonVMConstants.REG_SP].U4 = sp;
             state = ExecutionState.Next;
         }
     }

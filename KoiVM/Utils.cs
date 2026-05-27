@@ -49,9 +49,9 @@ namespace KoiVM
             list.InsertRange(index, newItems);
         }
 
-        public static bool IsGPR(this DarksVMRegisters reg)
+        public static bool IsGPR(this NeonVMRegisters reg)
         {
-            if(reg >= DarksVMRegisters.R0 && reg <= DarksVMRegisters.R7)
+            if(reg >= NeonVMRegisters.R0 && reg <= NeonVMRegisters.R7)
                 return true;
             return false;
         }

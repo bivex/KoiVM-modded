@@ -9,9 +9,9 @@ namespace KoiVM.Runtime.OpCodes
 {
     internal class Nop : IOpCode
     {
-        public byte Code => DarksVMConstants.OP_NOP;
+        public byte Code => NeonVMConstants.OP_NOP;
 
-        public void Load(DarksVMContext ctx, out ExecutionState state)
+        public void Load(NeonVMContext ctx, out ExecutionState state)
         {
             state = ExecutionState.Next;
         }

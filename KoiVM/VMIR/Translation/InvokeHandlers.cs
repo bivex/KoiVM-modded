@@ -182,7 +182,7 @@ namespace KoiVM.VMIR.Translation
                 var value = tr.Translate(expr.Arguments[0]);
                 tr.Instructions.Add(new IRInstruction(IROpCode.MOV)
                 {
-                    Operand1 = new IRRegister(DarksVMRegisters.R0, value.Type),
+                    Operand1 = new IRRegister(NeonVMRegisters.R0, value.Type),
                     Operand2 = value
                 });
             }

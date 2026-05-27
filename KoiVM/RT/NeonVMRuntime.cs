@@ -16,7 +16,7 @@ using KoiVM.VM;
 
 namespace KoiVM.RT
 {
-    public class DarksVMRuntime
+    public class NeonVMRuntime
     {
         private List<Tuple<MethodDef, ILBlock>> basicBlocks;
 
@@ -28,9 +28,9 @@ namespace KoiVM.RT
 
         private RuntimeMutator rtMutator;
         internal BasicBlockSerializer serializer;
-        private readonly IDarksVMSettings settings;
+        private readonly INeonVMSettings settings;
 
-        public DarksVMRuntime(IDarksVMSettings settings, ModuleDef rt)
+        public NeonVMRuntime(INeonVMSettings settings, ModuleDef rt)
         {
             this.settings = settings;
             Init(rt);

@@ -13,7 +13,7 @@ namespace KoiVM.Runtime.Execution
         public ulong HandlerAddr;
         public Type CatchType;
 
-        public DarksVMSlot BP;
-        public DarksVMSlot SP;
+        public NeonVMSlot BP;
+        public NeonVMSlot SP;
     }
 }

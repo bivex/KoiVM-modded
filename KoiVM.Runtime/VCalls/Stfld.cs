@@ -12,11 +12,11 @@ namespace KoiVM.Runtime.VCalls
 {
     internal class Stfld : IVCall
     {
-        public byte Code => DarksVMConstants.VCALL_STFLD;
+        public byte Code => NeonVMConstants.VCALL_STFLD;
 
-        public unsafe void Load(DarksVMContext ctx, out ExecutionState state)
+        public unsafe void Load(NeonVMContext ctx, out ExecutionState state)
         {
-            var sp = ctx.Registers[DarksVMConstants.REG_SP].U4;
+            var sp = ctx.Registers[NeonVMConstants.REG_SP].U4;
             var fieldSlot = ctx.Stack[sp--];
             var valSlot = ctx.Stack[sp--];
             var objSlot = ctx.Stack[sp--];
@@ -44,7 +44,7 @@ namespace KoiVM.Runtime.VCalls
             }
 
             ctx.Stack.SetTopPosition(sp);
-            ctx.Registers[DarksVMConstants.REG_SP].U4 = sp;
+            ctx.Registers[NeonVMConstants.REG_SP].U4 = sp;
             state = ExecutionState.Next;
         }
     }

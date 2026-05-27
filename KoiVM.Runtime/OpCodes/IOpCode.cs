@@ -13,6 +13,6 @@ namespace KoiVM.Runtime.OpCodes
             get;
         }
 
-        void Load(DarksVMContext ctx, out ExecutionState state);
+        void Load(NeonVMContext ctx, out ExecutionState state);
     }
 }

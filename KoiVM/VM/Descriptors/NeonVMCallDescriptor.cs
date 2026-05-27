@@ -16,7 +16,7 @@ namespace KoiVM.VM
             random.Shuffle(callOrder);
         }
 
-        public int this[DarksVMCalls call] => callOrder[(int) call];
+        public int this[NeonVMCalls call] => callOrder[(int) call];
 
         public int EXIT => callOrder[0];
 

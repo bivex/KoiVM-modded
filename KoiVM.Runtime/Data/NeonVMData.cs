@@ -10,15 +10,15 @@ using System.Runtime.InteropServices;
 
 namespace KoiVM.Runtime.Data
 {
-    internal unsafe class DarksVMData
+    internal unsafe class NeonVMData
     {
-        private static readonly Dictionary<Module, DarksVMData> moduleVMData = new Dictionary<Module, DarksVMData>();
-        private readonly Dictionary<uint, DarksVMExportInfo> exports;
+        private static readonly Dictionary<Module, NeonVMData> moduleVMData = new Dictionary<Module, NeonVMData>();
+        private readonly Dictionary<uint, NeonVMExportInfo> exports;
 
         private readonly Dictionary<uint, RefInfo> references;
         private readonly Dictionary<uint, string> strings;
 
-        public DarksVMData(Module module, void* data)
+        public NeonVMData(Module module, void* data)
         {
             var header = (VMDAT_HEADER*) data;
             if(header->MAGIC != 0x68736966)
@@ -26,7 +26,7 @@ namespace KoiVM.Runtime.Data
 
             references = new Dictionary<uint, RefInfo>();
             strings = new Dictionary<uint, string>();
-            exports = new Dictionary<uint, DarksVMExportInfo>();
+            exports = new Dictionary<uint, NeonVMExportInfo>();
 
             var ptr = (byte*) (header + 1);
             for(var i = 0; i < header->MD_COUNT; i++)
@@ -46,7 +46,7 @@ namespace KoiVM.Runtime.Data
                 strings[id] = new string((char*) ptr, 0, (int) len);
                 ptr += len << 1;
             }
-            for(var i = 0; i < header->EXP_COUNT; i++) exports[Utils.ReadCompressedUInt(ref ptr)] = new DarksVMExportInfo(ref ptr, module);
+            for(var i = 0; i < header->EXP_COUNT; i++) exports[Utils.ReadCompressedUInt(ref ptr)] = new NeonVMExportInfo(ref ptr, module);
 
             KoiSection = (byte*) data;
 
@@ -65,13 +65,13 @@ namespace KoiVM.Runtime.Data
             set;
         }
 
-        public static DarksVMData Instance(Module module)
+        public static NeonVMData Instance(Module module)
         {
-            DarksVMData data;
+            NeonVMData data;
             lock(moduleVMData)
             {
                 if(!moduleVMData.TryGetValue(module, out data))
-                    data = moduleVMData[module] = DarksVMDataInitializer.GetData(module);
+                    data = moduleVMData[module] = NeonVMDataInitializer.GetData(module);
             }
             return data;
         }
@@ -88,7 +88,7 @@ namespace KoiVM.Runtime.Data
             return strings[id];
         }
 
-        public DarksVMExportInfo LookupExport(uint id)
+        public NeonVMExportInfo LookupExport(uint id)
         {
             return exports[id];
         }

@@ -52,11 +52,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Data\VCallMap.cs" />
-    <Compile Include="Data\DarksVMData.cs" />
-    <Compile Include="Data\DarksVMExportInfo.cs" />
+    <Compile Include="Data\NeonVMData.cs" />
+    <Compile Include="Data\NeonVMExportInfo.cs" />
     <Compile Include="Data\OpCodeMap.cs" />
-    <Compile Include="Data\DarksVMFuncSig.cs" />
-    <Compile Include="Dynamic\DarksVMConstants.cs" />
+    <Compile Include="Data\NeonVMFuncSig.cs" />
+    <Compile Include="Dynamic\NeonVMConstants.cs" />
     <Compile Include="Execution\Internal\EHHelper.cs" />
     <Compile Include="Execution\PointerRef.cs" />
     <Compile Include="Execution\FieldRef.cs" />
@@ -70,15 +70,15 @@
     <Compile Include="Execution\Internal\DirectCall.cs" />
     <Compile Include="Execution\Internal\TypedReferenceHelpers.cs" />
     <Compile Include="Execution\Internal\Unverifier.cs" />
-    <Compile Include="Execution\Internal\DarksVMTrampoline.cs" />
+    <Compile Include="Execution\Internal\NeonVMTrampoline.cs" />
     <Compile Include="Execution\IReference.cs" />
     <Compile Include="Execution\PointerType.cs" />
     <Compile Include="Execution\StackRef.cs" />
     <Compile Include="Execution\TypedRefPtr.cs" />
-    <Compile Include="Execution\DarksVMContext.cs" />
-    <Compile Include="Execution\DarksVMDispatcher.cs" />
-    <Compile Include="Execution\DarksVMSlot.cs" />
-    <Compile Include="Execution\DarksVMStack.cs" />
+    <Compile Include="Execution\NeonVMContext.cs" />
+    <Compile Include="Execution\NeonVMDispatcher.cs" />
+    <Compile Include="Execution\NeonVMSlot.cs" />
+    <Compile Include="Execution\NeonVMStack.cs" />
     <Compile Include="OpCodes\Add.cs" />
     <Compile Include="OpCodes\Cmp.cs" />
     <Compile Include="OpCodes\Call.cs" />
@@ -105,7 +105,7 @@
     <Compile Include="OpCodes\Push.cs" />
     <Compile Include="Platform.cs" />
     <Compile Include="Utils.cs" />
-    <Compile Include="Data\DarksVMDataInitializer.cs" />
+    <Compile Include="Data\NeonVMDataInitializer.cs" />
     <Compile Include="VCalls\Box.cs" />
     <Compile Include="VCalls\Cast.cs" />
     <Compile Include="VCalls\Ckfinite.cs" />
@@ -123,9 +123,9 @@
     <Compile Include="VCalls\Exit.cs" />
     <Compile Include="VCalls\Ecall.cs" />
     <Compile Include="VCalls\IVCall.cs" />
-    <Compile Include="DarksVM.cs" />
+    <Compile Include="NeonVM.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="DarksVMInstance.cs" />
+    <Compile Include="NeonVMInstance.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

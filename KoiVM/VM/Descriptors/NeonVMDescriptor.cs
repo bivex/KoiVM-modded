@@ -8,7 +8,7 @@ namespace KoiVM.VM
 {
     public class VMDescriptor
     {
-        public VMDescriptor(IDarksVMSettings settings)
+        public VMDescriptor(INeonVMSettings settings)
         {
             Random = new Random(settings.Seed);
             Settings = settings;
@@ -22,7 +22,7 @@ namespace KoiVM.VM
             get;
         }
 
-        public IDarksVMSettings Settings
+        public INeonVMSettings Settings
         {
             get;
         }

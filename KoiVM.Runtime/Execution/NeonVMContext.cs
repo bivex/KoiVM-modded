@@ -8,28 +8,28 @@ using KoiVM.Runtime.Dynamic;
 
 namespace KoiVM.Runtime.Execution
 {
-    internal class DarksVMContext
+    internal class NeonVMContext
     {
         private const int NumRegisters = 16;
         public readonly List<EHFrame> EHStack = new List<EHFrame>();
         public readonly List<EHState> EHStates = new List<EHState>();
-        public readonly DarksVMInstance Instance;
+        public readonly NeonVMInstance Instance;
 
-        public readonly DarksVMSlot[] Registers = new DarksVMSlot[16];
-        public readonly DarksVMStack Stack = new DarksVMStack();
+        public readonly NeonVMSlot[] Registers = new NeonVMSlot[16];
+        public readonly NeonVMStack Stack = new NeonVMStack();
 
-        public DarksVMContext(DarksVMInstance inst)
+        public NeonVMContext(NeonVMInstance inst)
         {
             Instance = inst;
         }
 
         public unsafe byte ReadByte()
         {
-            var key = Registers[DarksVMConstants.REG_K1].U4;
-            var ip = (byte*) Registers[DarksVMConstants.REG_IP].U8++;
+            var key = Registers[NeonVMConstants.REG_K1].U4;
+            var ip = (byte*) Registers[NeonVMConstants.REG_IP].U8++;
             var b = (byte) (*ip ^ key);
             key = key * 7 + b;
-            Registers[DarksVMConstants.REG_K1].U4 = key;
+            Registers[NeonVMConstants.REG_K1].U4 = key;
             return b;
         }
     }

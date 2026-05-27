@@ -49,13 +49,13 @@ namespace What_a_great_VM
             const ulong SignMask = 1U << 31;
             byte flag = 0;
             if(result == 0)
-                flag |= DarksVMConstants.FL_ZERO;
+                flag |= NeonVMConstants.FL_ZERO;
             if((result & SignMask) != 0)
-                flag |= DarksVMConstants.FL_SIGN;
+                flag |= NeonVMConstants.FL_SIGN;
             if(((op1 ^ flResult) & (op2 ^ flResult) & SignMask) != 0)
-                flag |= DarksVMConstants.FL_OVERFLOW;
+                flag |= NeonVMConstants.FL_OVERFLOW;
             if(((op1 ^ ((op1 ^ op2) & (op2 ^ flResult))) & SignMask) != 0)
-                flag |= DarksVMConstants.FL_CARRY;
+                flag |= NeonVMConstants.FL_CARRY;
             fl = (byte) ((fl & ~mask) | (flag & mask));
         }
 
@@ -64,13 +64,13 @@ namespace What_a_great_VM
             const ulong SignMask = 1U << 63;
             byte flag = 0;
             if(result == 0)
-                flag |= DarksVMConstants.FL_ZERO;
+                flag |= NeonVMConstants.FL_ZERO;
             if((result & SignMask) != 0)
-                flag |= DarksVMConstants.FL_SIGN;
+                flag |= NeonVMConstants.FL_SIGN;
             if(((op1 ^ flResult) & (op2 ^ flResult) & SignMask) != 0)
-                flag |= DarksVMConstants.FL_OVERFLOW;
+                flag |= NeonVMConstants.FL_OVERFLOW;
             if(((op1 ^ ((op1 ^ op2) & (op2 ^ flResult))) & SignMask) != 0)
-                flag |= DarksVMConstants.FL_CARRY;
+                flag |= NeonVMConstants.FL_CARRY;
             fl = (byte) ((fl & ~mask) | (flag & mask));
         }
     }

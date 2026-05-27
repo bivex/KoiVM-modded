@@ -16,11 +16,11 @@ namespace KoiVM.RT.Mutation
         internal RTConstants constants;
         private RuntimeHelpers helpers;
         private readonly MethodPatcher methodPatcher;
-        private readonly DarksVMRuntime rt;
+        private readonly NeonVMRuntime rt;
         private MetaData rtMD;
         private ModuleWriterBase rtWriter;
 
-        public RuntimeMutator(ModuleDef module, DarksVMRuntime rt)
+        public RuntimeMutator(ModuleDef module, NeonVMRuntime rt)
         {
             RTModule = module;
             this.rt = rt;
