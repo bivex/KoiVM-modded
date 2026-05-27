@@ -20,3 +20,4 @@ IDE/
 ## Test artifacts
 tests/test-output/
 /bin
+/.antigravitycli

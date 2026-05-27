@@ -1,4 +1,4 @@
-﻿#region
+#region
 
 using System;
 using System.Collections.Generic;
@@ -8,6 +8,7 @@ using KoiVM.RT;
 using KoiVM.VM;
 using KoiVM.VMIR.Transforms;
 using KoiVM.Protections.OpaquePredicate;
+using KoiVM.Protections.EHShadow;
 
 #endregion
 
@@ -65,6 +66,7 @@ namespace KoiVM.VMIR
                 Context.IsRuntime ? null : new OpaquePredicateTransform(),
                 Context.IsRuntime ? null : new GuardBlockTransform(),
                 Context.IsRuntime ? null : new EHTransform(),
+                Context.IsRuntime ? null : new EHShadowTransform(),
                 new InitLocalTransform(),
                 new ConstantTypePromotionTransform(),
                 new GetSetFlagTransform(),
