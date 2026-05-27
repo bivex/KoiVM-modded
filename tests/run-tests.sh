@@ -85,10 +85,12 @@ echo ""
 # ---- Phase 4: Run protected version ----
 echo "[Phase 4] Running protected target..."
 cd "$ROOT"
-mono "$PROTECTED_EXE" > "$OUTPUT_DIR/protected-output.txt" 2>&1
+mono "$PROTECTED_EXE" > "$OUTPUT_DIR/protected-raw.txt" 2>&1
 PROTECTED_EXIT=$?
+# Strip Mono metadata warnings from output
+grep -v "^Unknown heap type:" "$OUTPUT_DIR/protected-raw.txt" | sed '/^$/d' > "$OUTPUT_DIR/protected-output.txt"
 echo "  Exit code: $PROTECTED_EXIT"
-cat "$OUTPUT_DIR/protected-output.txt" | sed 's/^/    /'
+cat "$OUTPUT_DIR/protected-raw.txt" | sed 's/^/    /'
 echo ""
 
 # ---- Phase 5: Compare outputs ----

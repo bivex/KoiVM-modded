@@ -1,7 +1,8 @@
-﻿#region
+#region
 
 using What_a_great_VM;
 using System;
+using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -17,12 +18,114 @@ namespace KoiVM.Runtime.Data
             if(!Platform.LittleEndian)
                 throw new PlatformNotSupportedException();
 
-            var moduleBase = (byte*) Marshal.GetHINSTANCE(module);
             var fqn = module.FullyQualifiedName;
             var isFlat = fqn.Length > 0 && fqn[0] == '<';
+
+            // On Mono (non-Windows), Marshal.GetHINSTANCE returns a pointer to
+            // Mono's internal image struct, not a PE-mapped file. Parse from disk.
+            if(Type.GetType("Mono.Runtime") != null || !Platform.IsWindows)
+            {
+                if(isFlat)
+                    return new DarksVMData(module, GetKoiStreamFlat((byte*) Marshal.GetHINSTANCE(module)));
+                return new DarksVMData(module, GetKoiStreamFromFile(fqn));
+            }
+
+            var moduleBase = (byte*) Marshal.GetHINSTANCE(module);
             if(isFlat)
                 return new DarksVMData(module, GetKoiStreamFlat(moduleBase));
             return new DarksVMData(module, GetKoiStreamMapped(moduleBase));
+        }
+
+        private static void* GetKoiStreamFromFile(string filePath)
+        {
+            var bytes = File.ReadAllBytes(filePath);
+            var pinned = GCHandle.Alloc(bytes, GCHandleType.Pinned);
+            var moduleBase = (byte*) pinned.AddrOfPinnedObject();
+
+            var ptr = moduleBase + 0x3c;
+            byte* ptr2;
+            ptr = ptr2 = moduleBase + *(uint*) ptr;
+            ptr += 0x6;
+            var sectNum = *(ushort*) ptr;
+            ptr += 14;
+            var optSize = *(ushort*) ptr;
+            ptr = ptr2 = ptr + 0x4 + optSize;
+
+            var mdDir = *(uint*) (ptr - 16);
+
+            var vAdrs = new uint[sectNum];
+            var vSizes = new uint[sectNum];
+            var rAdrs = new uint[sectNum];
+            for(var i = 0; i < sectNum; i++)
+            {
+                vAdrs[i] = *(uint*) (ptr + 12);
+                vSizes[i] = *(uint*) (ptr + 8);
+                rAdrs[i] = *(uint*) (ptr + 20);
+                ptr += 0x28;
+            }
+
+            for(var i = 0; i < sectNum; i++)
+                if(vAdrs[i] <= mdDir && mdDir < vAdrs[i] + vSizes[i])
+                {
+                    mdDir = mdDir - vAdrs[i] + rAdrs[i];
+                    break;
+                }
+            var mdDirPtr = moduleBase + mdDir;
+            var mdHdr = *(uint*) (mdDirPtr + 8);
+            for(var i = 0; i < sectNum; i++)
+                if(vAdrs[i] <= mdHdr && mdHdr < vAdrs[i] + vSizes[i])
+                {
+                    mdHdr = mdHdr - vAdrs[i] + rAdrs[i];
+                    break;
+                }
+
+            var mdHdrPtr = moduleBase + mdHdr;
+            mdHdrPtr += 12;
+            mdHdrPtr += *(uint*) mdHdrPtr;
+            mdHdrPtr = (byte*) (((ulong) mdHdrPtr + 7) & ~3UL);
+            mdHdrPtr += 2;
+            ushort numOfStream = *mdHdrPtr;
+            mdHdrPtr += 2;
+            var streamName = new StringBuilder();
+            for(var i = 0; i < numOfStream; i++)
+            {
+                var offset = *(uint*) mdHdrPtr;
+                var len = *(uint*) (mdHdrPtr + 4);
+                streamName.Length = 0;
+                mdHdrPtr += 8;
+                for(var ii = 0; ii < 8; ii++)
+                {
+                    streamName.Append((char) *mdHdrPtr++);
+                    if(*mdHdrPtr == 0)
+                    {
+                        mdHdrPtr += 3;
+                        break;
+                    }
+                    streamName.Append((char) *mdHdrPtr++);
+                    if(*mdHdrPtr == 0)
+                    {
+                        mdHdrPtr += 2;
+                        break;
+                    }
+                    streamName.Append((char) *mdHdrPtr++);
+                    if(*mdHdrPtr == 0)
+                    {
+                        mdHdrPtr += 1;
+                        break;
+                    }
+                    streamName.Append((char) *mdHdrPtr++);
+                    if(*mdHdrPtr == 0)
+                        break;
+                }
+                if(streamName.ToString() == "#DarksVM")
+                {
+                    void* result = AllocateKoiFromBytes(moduleBase + mdHdr + offset, len);
+                    pinned.Free();
+                    return result;
+                }
+            }
+            pinned.Free();
+            return null;
         }
 
         private static void* GetKoiStreamMapped(byte* moduleBase)
@@ -172,6 +275,15 @@ namespace KoiVM.Runtime.Data
         {
             var koi = (void*) Marshal.AllocHGlobal((int) len);
             CopyMemory(koi, ptr, len);
+            return koi;
+        }
+
+        private static void* AllocateKoiFromBytes(void* ptr, uint len)
+        {
+            var koi = (void*) Marshal.AllocHGlobal((int) len);
+            var src = new byte[len];
+            Marshal.Copy((IntPtr) ptr, src, 0, (int) len);
+            Marshal.Copy(src, 0, (IntPtr) koi, (int) len);
             return koi;
         }
     }
