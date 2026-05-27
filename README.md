@@ -1,130 +1,83 @@
-**DarksVM - KoiVM custom**
-========
-**DarksVM** is a modified version of **KoiVM** which is a ConfuserEx plugin that allows you to virtualize methods to be understandable only by our computer.
+# DarksVM (KoiVM Custom) Specification
 
-This version includes:
-* Modified VMEntry name and entries
-* Renamed 'Run' method to 'Load'
-* Added some calculation
-* OldRod is no longer able to devirtualize
-* Improved compatibility
+## 1. Scope
+This document specifies DarksVM, a modified version of the KoiVM ConfuserEx plugin. The system is designed to virtualize .NET methods, rendering them understandable exclusively by the custom virtual machine. Modifications from the original KoiVM include altered VMEntry names, renaming of the 'Run' method to 'Load', integration of additional calculations, prevention of OldRod devirtualization, and enhanced compatibility.
 
-![](_68747470733a2f2f63646e2e6434726b2e66722f4d486d2e6a7067.png)
+## 2. Normative References
+The following prerequisites are required for operation on macOS:
+* Mono framework
+* NuGet package manager
 
-**Prerequisites (macOS)**
---------
-```
-brew install mono nuget
-```
+## 3. Installation / Setup
+The following commands execute the build process for the required components.
 
-**Building ConfuserEx-Plus**
---------
-```
+### 3.1. Building ConfuserEx-Plus
+```bash
 cd ConfuserEx-Plus
 nuget install ./ConfuserEx/packages.config -OutputDirectory ./packages
 
-# Build all non-GUI projects (WPF GUI is not available on macOS)
+# Build all non-GUI projects
 for proj in dnlib Confuser.Core Confuser.DynCipher Confuser.Renamer Confuser.Protections Confuser.Runtime Confuser.CLI; do
   xbuild $proj/$proj.csproj /p:Configuration=Debug /p:Platform=AnyCPU
 done
 ```
-Output: `ConfuserEx-Plus/Debug/bin/`
+Output directory: `ConfuserEx-Plus/Debug/bin/`
 
-**Building KoiVM**
---------
-```
+### 3.2. Building KoiVM
+```bash
 cd ..
-
-# KoiVM.Runtime and KoiVM (output to bin/)
 xbuild KoiVM.Runtime/KoiVM.Runtime.csproj /p:Configuration=Debug /p:Platform=AnyCPU
 xbuild KoiVM/KoiVM.csproj /p:Configuration=Debug /p:Platform=AnyCPU
 ```
-Output: `bin/`
+Output directory: `bin/`
 
-**Building KoiVM.Confuser (plugin)**
---------
-```
-# Copy dependencies
+### 3.3. Building KoiVM.Confuser (Plugin)
+```bash
 cp bin/KoiVM.dll bin/KoiVM.Runtime.dll ConfuserEx-Plus/Debug/bin/
-
-# Build plugin (output goes to ConfuserEx-Plus/Debug/bin/)
 xbuild KoiVM.Confuser/KoiVM.Confuser.csproj /p:Configuration=Debug /p:Platform=AnyCPU
 ```
+Output directory: `ConfuserEx-Plus/Debug/bin/`
 
-**How to use**
---------
-Add these projects to your ConfuserEx, then add this in your .crproj project file
-```
+## 4. System Architecture
+The KoiVM pipeline replaces method bodies with a custom virtual machine. The transformation executes as follows:
+1. **CIL to CFG**: The original CIL is converted into a Control Flow Graph.
+2. **CFG to IL-AST**: The graph is transformed into an Intermediate Representation.
+3. **IL-AST to VM IR**: The representation is translated into VM-specific opcodes.
+4. **VM IR to Bytecode**: The opcodes are compiled into custom bytecode and stored in a `#DarksVM` metadata stream.
+5. **Runtime Injection**: The VM interpreter (comprising 141 classes and 493+ methods) is merged into the target assembly.
+
+The virtualization obscures the original logic, rendering decompilers (e.g., dnSpy, ILSpy) capable of displaying only the `DarksVM.Load(...)` call. VM opcodes and encryption keys are uniquely generated per build, requiring a custom devirtualizer for each protected assembly. Standard .NET features (arithmetic, floats, exceptions, generics, arrays) are fully supported.
+
+## 5. Operational Procedures
+To operationalize the virtualization, the compiled projects must be added to ConfuserEx. 
+
+### 5.1. Project Configuration
+Update the `.crproj` project file:
+```xml
 <rule pattern="true" inherit="false">
   <protection id="virt" />
 </rule>
 <plugin>?:\path\to\your\project\KoiVM.Confuser.exe</plugin>
 ```
 
-Or via CLI:
-```
+### 5.2. CLI Execution
+```bash
 mono Confuser.CLI.exe -plugin KoiVM.Confuser.dll -probe . -o output input.exe
 ```
 
-Mark methods to virtualize with:
+### 5.3. Method Marking
+Methods designated for virtualization must be annotated in the source code:
 ```csharp
 [System.Reflection.Obfuscation(Exclude = false, Feature = "+virt")]
 ```
 
-**How it works**
---------
-KoiVM replaces method bodies with a custom virtual machine. Here's what happens:
-
-**Before** — normal .NET IL, readable by any decompiler (dnSpy, ILSpy):
-```cil
-// int Arithmetic(int a, int b)
-IL_0001: ldarg.0       // load a
-IL_0002: ldarg.1       // load b
-IL_0003: add            // a + b
-IL_0006: ldc.i4.3
-IL_0007: mul            // * 3
-IL_000a: ldarg.0
-IL_000b: sub            // - a
-...
-```
-
-**After** — method body is replaced with a stub that calls the VM:
-```cil
-// int Arithmetic(int a, int b)
-IL_0000: ldc.i4 5714370        // encryption keys
-IL_0005: ldc.i4 2857185        // (random per build)
-IL_000a: ldtoken TestSubjects  // type reference only
-IL_000f: ldc.i4 11428740
-IL_0014: ldc.i4 8571555
-IL_001a: newarr Object         // pack arguments
-IL_0031: call DarksVM::Load()  // execute in VM
-IL_0036: unbox.any Int32
-```
-
-The pipeline:
-1. **CIL → CFG** — original IL is converted to a control flow graph
-2. **CFG → IL-AST** — transformed into an intermediate representation
-3. **IL-AST → VM IR** — translated to VM-specific opcodes
-4. **VM IR → bytecode** — compiled into custom bytecode stored in a `#DarksVM` metadata stream
-5. **Runtime injection** — the VM interpreter (141 classes, 493+ methods) is merged into the target assembly
-
-What makes it hard to reverse:
-- Decompileers show only `DarksVM.Load(...)` — no original logic visible
-- VM opcodes and encryption keys are unique per build
-- A custom devirtualizer must be written for each protected assembly
-- All .NET features still work correctly: arithmetic, floats, exceptions, generics, arrays, etc.
-
-**Running tests**
---------
-```
+## 6. Diagnostic Tools / Troubleshooting
+To verify the integrity of the virtualization, execute the test suite:
+```bash
 bash tests/run-tests.sh
 ```
-This builds a test target, captures baseline output, protects it with KoiVM, runs the protected version, and compares outputs. All 19 test methods must produce identical results.
+The test suite compiles a target, captures baseline execution output, applies KoiVM protection, executes the protected binary, and compares outputs. Validation requires 19 test methods to produce identical results. Coverage includes arithmetic, floating-point mathematics, bitwise operations, strings, loops, switch statements, exception handling, method call chains, value types, arrays, boxing/unboxing, boolean logic, and static fields.
 
-Test coverage: arithmetic, float math, bitwise ops, string operations, loops (factorial, fibonacci), switch, exception handling, method call chains, value types, arrays, boxing/unboxing, boolean logic, type checks, static fields.
-
-Credit to d4rk, developer and creator.
-Join the Discord community and get access to DarkProtector and others, for free!
-https://discord.gg/bkkybeM
-
-![](d4rk_avatar.gif?s=87)
+## Annex A (Informative): Credits and Community
+* Developer: d4rk
+* Community: https://discord.gg/bkkybeM
