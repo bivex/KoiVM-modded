@@ -1,0 +1,19 @@
+## Build output
+bin/
+Debug/
+
+## .NET
+*.pdb
+obj/
+
+## OS
+.DS_Store
+Thumbs.db
+
+## IDE
+.vs/
+.vscode/
+*.user
+*.suo
+IDE/
+/bin

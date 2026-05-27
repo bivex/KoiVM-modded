@@ -12,6 +12,17 @@ This version includes:
 
 ![](_68747470733a2f2f63646e2e6434726b2e66722f4d486d2e6a7067.png)
 
+**Building on macOS**
+--------
+1. Install Mono: `brew install mono`
+2. Build in order:
+   ```
+   xbuild KoiVM.Runtime/KoiVM.Runtime.csproj /p:Configuration=Debug /p:Platform=AnyCPU
+   xbuild KoiVM/KoiVM.csproj /p:Configuration=Debug /p:Platform=AnyCPU
+   xbuild KoiVM.Confuser/KoiVM.Confuser.csproj /p:Configuration=Debug /p:Platform=AnyCPU
+   ```
+   Output goes to `bin/` (KoiVM.Confuser requires ConfuserEx dependencies).
+
 **How to use**
 --------
 Add these projects to your ConfuserEx, then add this in your .crproj project file
