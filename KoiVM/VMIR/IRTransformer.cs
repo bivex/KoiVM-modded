@@ -7,6 +7,7 @@ using KoiVM.CFG;
 using KoiVM.RT;
 using KoiVM.VM;
 using KoiVM.VMIR.Transforms;
+using KoiVM.Protections.OpaquePredicate;
 
 #endregion
 
@@ -61,6 +62,7 @@ namespace KoiVM.VMIR
             pipeline = new ITransform[]
             {
                 new SMCIRTransform(),
+                Context.IsRuntime ? null : new OpaquePredicateTransform(),
                 Context.IsRuntime ? null : new GuardBlockTransform(),
                 Context.IsRuntime ? null : new EHTransform(),
                 new InitLocalTransform(),
