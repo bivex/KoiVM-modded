@@ -1,4 +1,4 @@
-﻿#region
+#region
 
 using System.Linq;
 using KoiVM.AST.IL;
@@ -30,11 +30,18 @@ namespace KoiVM.Protections.SMC
             scope.Content[scope.Content.IndexOf(trampoline)] = newTrampoline;
 
             adrKey = tr.VM.Random.Next();
-            newTrampoline.Key = (byte) tr.VM.Random.Next();
+
+            newTrampoline.LcgMultValue = (uint) (tr.VM.Random.Next() | 1);
+            newTrampoline.LcgAddValue = (uint) tr.VM.Random.Next();
+            newTrampoline.MethodSeed1Value = (uint) tr.VM.Random.Next();
+            newTrampoline.MethodSeed2Value = (uint) tr.VM.Random.Next();
         }
 
         public void Transform(ILTransformer tr)
         {
+            if(trampoline == null)
+                return;
+
             if(tr.Block.Targets.Contains(trampoline))
                 tr.Block.Targets[tr.Block.Targets.IndexOf(trampoline)] = newTrampoline;
 
@@ -46,6 +53,9 @@ namespace KoiVM.Protections.SMC
 
         private void VisitInstr(ILInstrList instrs, ILInstruction instr, ref int index, ILTransformer tr)
         {
+            if(trampoline == null)
+                return;
+
             if(instr.Operand is ILBlockTarget)
             {
                 var target = (ILBlockTarget) instr.Operand;
@@ -57,15 +67,35 @@ namespace KoiVM.Protections.SMC
                 return;
             }
 
-            if(instr.IR.Annotation == SMCBlock.CounterInit && instr.OpCode == ILOpCode.PUSHI_DWORD)
+            if(instr.IR.Annotation == SMCBlock.BlockOffset && instr.OpCode == ILOpCode.PUSHI_DWORD)
             {
                 var imm = (ILImmediate) instr.Operand;
-                if((int) imm.Value == 0x0f000001) newTrampoline.CounterOperand = imm;
+                if((int) imm.Value == 0x0f000001) newTrampoline.BlockOffsetOperand = imm;
             }
-            else if(instr.IR.Annotation == SMCBlock.EncryptionKey && instr.OpCode == ILOpCode.PUSHI_DWORD)
+            else if(instr.IR.Annotation == SMCBlock.MethodSeed1 && instr.OpCode == ILOpCode.PUSHI_DWORD)
             {
                 var imm = (ILImmediate) instr.Operand;
-                if((int) imm.Value == 0x0f000002) imm.Value = (int) newTrampoline.Key;
+                if((int) imm.Value == 0x0f000002) imm.Value = (int) newTrampoline.MethodSeed1Value;
+            }
+            else if(instr.IR.Annotation == SMCBlock.MethodSeed2 && instr.OpCode == ILOpCode.PUSHI_DWORD)
+            {
+                var imm = (ILImmediate) instr.Operand;
+                if((int) imm.Value == 0x0f000003) imm.Value = (int) newTrampoline.MethodSeed2Value;
+            }
+            else if(instr.IR.Annotation == SMCBlock.LcgMult && instr.OpCode == ILOpCode.PUSHI_DWORD)
+            {
+                var imm = (ILImmediate) instr.Operand;
+                if((int) imm.Value == 0x0f000004) imm.Value = (int) newTrampoline.LcgMultValue;
+            }
+            else if(instr.IR.Annotation == SMCBlock.LcgAdd && instr.OpCode == ILOpCode.PUSHI_DWORD)
+            {
+                var imm = (ILImmediate) instr.Operand;
+                if((int) imm.Value == 0x0f000005) imm.Value = (int) newTrampoline.LcgAddValue;
+            }
+            else if(instr.IR.Annotation == SMCBlock.DwordCount && instr.OpCode == ILOpCode.PUSHI_DWORD)
+            {
+                var imm = (ILImmediate) instr.Operand;
+                if((int) imm.Value == 0x0f000006) newTrampoline.DwordCountOperand = imm;
             }
             else if(instr.IR.Annotation == SMCBlock.AddressPart1 && instr.OpCode == ILOpCode.PUSHI_DWORD &&
                     instr.Operand is ILBlockTarget)
@@ -86,7 +116,7 @@ namespace KoiVM.Protections.SMC
             else if(instr.IR.Annotation == SMCBlock.AddressPart2 && instr.OpCode == ILOpCode.PUSHI_DWORD)
             {
                 var imm = (ILImmediate) instr.Operand;
-                if((int) imm.Value == 0x0f000003) imm.Value = adrKey;
+                if((int) imm.Value == 0x0f000007) imm.Value = adrKey;
             }
         }
     }

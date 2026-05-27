@@ -60,7 +60,7 @@ namespace KoiVM.VMIR
         {
             pipeline = new ITransform[]
             {
-                // new SMCIRTransform(),
+                new SMCIRTransform(),
                 Context.IsRuntime ? null : new GuardBlockTransform(),
                 Context.IsRuntime ? null : new EHTransform(),
                 new InitLocalTransform(),

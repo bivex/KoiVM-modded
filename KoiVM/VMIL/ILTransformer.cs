@@ -61,7 +61,7 @@ namespace KoiVM.VMIL
         {
             return new ITransform[]
             {
-                // new SMCILTransform(),
+                new SMCILTransform(),
                 new ReferenceOffsetTransform(),
                 new EntryExitTransform(),
                 new SaveInfoTransform()
