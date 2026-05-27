@@ -94,12 +94,12 @@ namespace KoiVM.Confuser
             if(ver == settings.Version)
                 return;
 
-            ctx.Logger.LogFormat("New version of KoiVM: {0}", ver);
-            ctx.Logger.LogFormat("Current version of KoiVM: {0}", settings.Version);
+            ctx.Logger.InfoFormat("New version of KoiVM: {0}", ver);
+            ctx.Logger.InfoFormat("Current version of KoiVM: {0}", settings.Version);
 
             if(settings.NoUI)
             {
-                ctx.Logger.LogFormat("Updating...");
+                ctx.Logger.InfoFormat("Updating...");
                 var sys = new KoiSystem();
                 var hnd = new ManualResetEvent(false);
                 var okay = false;
@@ -128,7 +128,7 @@ namespace KoiVM.Confuser
         {
             if(settings.NoUI)
             {
-                ctx.Logger.Log("Retrieving Koi...");
+                ctx.Logger.Info("Retrieving Koi...");
 
                 var sys = new KoiSystem();
                 var hnd = new ManualResetEvent(false);

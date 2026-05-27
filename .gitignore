@@ -16,4 +16,7 @@ Thumbs.db
 *.user
 *.suo
 IDE/
+
+## Test artifacts
+tests/test-output/
 /bin

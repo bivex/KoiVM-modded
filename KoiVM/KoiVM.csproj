@@ -49,7 +49,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="dnlib">
-      <HintPath>..\dnlib.dll</HintPath>
+      <HintPath>..\ConfuserEx-Plus\Debug\bin\dnlib.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="System" />

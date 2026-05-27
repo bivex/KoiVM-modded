@@ -1,7 +1,6 @@
 ﻿#region
 
 using System;
-using System.Drawing;
 using System.IO;
 using System.Reflection;
 using Confuser.Core;
@@ -152,8 +151,7 @@ namespace KoiVM.Confuser.Internal
 
             public static void Input(string text)
             {
-                Colorful.Console.Write(string.Format("                         [{0}] ", DateTime.Now), Color.DarkRed);
-                Colorful.Console.Write(text + "\n", Color.White);
+                Console.WriteLine("[{0}] {1}", DateTime.Now, text);
             }
 
             public void Log(string msg) => Input(msg);
@@ -170,6 +168,20 @@ namespace KoiVM.Confuser.Internal
 
             public void ErrorFormat(string format, params object[] args) => Input("ERROR: " + string.Format(format, args));
 
+            public void Info(string msg) => Input(msg);
+
+            public void InfoFormat(string format, params object[] args) => Input(string.Format(format, args));
+
+            public void Debug(string msg) => Input(msg);
+
+            public void DebugFormat(string format, params object[] args) => Input(string.Format(format, args));
+
+            public void Warn(string msg) => Input("WARN: " + msg);
+
+            public void WarnFormat(string format, params object[] args) => Input("WARN: " + string.Format(format, args));
+
+            public void WarnException(string msg, Exception ex) => Input("WARN: " + msg + " " + ex);
+
             public void Progress(int progress, int overall)
             {
             }
@@ -182,7 +194,7 @@ namespace KoiVM.Confuser.Internal
             {
                 if(!successful)
                     throw new ConfuserException(null);
-                baseLogger.Log("Finish protecting Runtime.");
+                baseLogger.Info("Finish protecting Runtime.");
             }
         }
     }
