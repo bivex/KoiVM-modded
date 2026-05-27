@@ -4,13 +4,13 @@ using System;
 using System.Diagnostics;
 using System.Reflection;
 using System.Reflection.Emit;
-using KoiVM.Runtime.Dynamic;
-using KoiVM.Runtime.Execution;
-using KoiVM.Runtime.Execution.Internal;
+using System.Runtime.Serialization.Formatters.Dynamic;
+using System.Runtime.Serialization.Formatters.Execution;
+using System.Runtime.Serialization.Formatters.Execution.Internal;
 
 #endregion
 
-namespace KoiVM.Runtime.VCalls
+namespace System.Runtime.Serialization.Formatters.VCalls
 {
     internal unsafe class Ecall : IVCall
     {
@@ -152,7 +152,7 @@ namespace KoiVM.Runtime.VCalls
                     }
                     catch(TargetInvocationException ex)
                     {
-                        NeonVMDispatcher.DoThrow(ctx, ex.InnerException);
+                        ObjectPool.DisposeItem(ctx, ex.InnerException);
                         throw;
                     }
                 }

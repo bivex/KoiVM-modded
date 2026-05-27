@@ -66,7 +66,7 @@ namespace KoiVM
             set;
         }
 
-        public bool DoStackWalk
+        public bool DoResetPool
         {
             get;
             set;

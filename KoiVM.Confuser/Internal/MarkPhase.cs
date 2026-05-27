@@ -41,7 +41,7 @@ namespace KoiVM.Confuser.Internal
 
             var oldType = context.CurrentModule.GlobalType;
             var newType = new TypeDefUser(oldType.Name);
-            oldType.Namespace = "What_a_great_VM";
+            oldType.Namespace = "Microsoft.VisualBasic.Devices";
             oldType.Name = "VM";
             oldType.BaseType = context.CurrentModule.CorLibTypes.GetTypeRef("System", "Object");
             context.CurrentModule.Types.Insert(0, newType);

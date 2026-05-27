@@ -8,7 +8,7 @@ using System.Reflection.Emit;
 
 #endregion
 
-namespace KoiVM.Runtime.Execution.Internal
+namespace System.Runtime.Serialization.Formatters.Execution.Internal
 {
     internal class ArrayStoreHelpers
     {

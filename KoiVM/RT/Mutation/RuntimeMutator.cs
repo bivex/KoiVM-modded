@@ -110,7 +110,7 @@ namespace KoiVM.RT.Mutation
         private void MutateRuntime()
         {
             var settings = rt.Descriptor.Settings;
-            RuntimePatcher.Patch(RTModule, settings.ExportDbgInfo, settings.DoStackWalk);
+            RuntimePatcher.Patch(RTModule, settings.ExportDbgInfo, settings.DoResetPool);
             constants.InjectConstants(RTModule, rt.Descriptor, helpers);
             new Renamer(rt.Descriptor.Random.Next()).Process(RTModule);
         }

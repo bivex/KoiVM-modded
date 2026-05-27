@@ -5,7 +5,7 @@ using System.Reflection;
 
 #endregion
 
-namespace What_a_great_VM
+namespace Microsoft.VisualBasic.Devices
 {
     public class NeonVM
     {

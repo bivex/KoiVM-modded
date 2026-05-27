@@ -1,12 +1,12 @@
 ﻿#region
 
 using System.Collections.Generic;
-using What_a_great_VM;
-using KoiVM.Runtime.Dynamic;
+using Microsoft.VisualBasic.Devices;
+using System.Runtime.Serialization.Formatters.Dynamic;
 
 #endregion
 
-namespace KoiVM.Runtime.Execution
+namespace System.Runtime.Serialization.Formatters.Execution
 {
     internal class NeonVMContext
     {

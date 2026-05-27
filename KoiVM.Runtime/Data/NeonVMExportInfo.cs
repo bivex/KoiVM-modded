@@ -4,7 +4,7 @@ using System.Reflection;
 
 #endregion
 
-namespace KoiVM.Runtime.Data
+namespace System.Runtime.Serialization.Formatters.Data
 {
     internal struct NeonVMExportInfo
     {

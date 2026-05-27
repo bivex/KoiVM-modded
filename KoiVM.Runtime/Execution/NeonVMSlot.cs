@@ -3,12 +3,12 @@
 using System;
 using System.Reflection;
 using System.Runtime.InteropServices;
-using What_a_great_VM;
-using KoiVM.Runtime.Execution.Internal;
+using Microsoft.VisualBasic.Devices;
+using System.Runtime.Serialization.Formatters.Execution.Internal;
 
 #endregion
 
-namespace KoiVM.Runtime.Execution
+namespace System.Runtime.Serialization.Formatters.Execution
 {
     [StructLayout(LayoutKind.Explicit)]
     internal struct NeonVMSlot

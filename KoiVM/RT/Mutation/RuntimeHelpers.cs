@@ -27,7 +27,7 @@ namespace KoiVM.RT.Mutation
             this.rt = rt;
             this.rtModule = rtModule;
             this.constants = constants;
-            rtHelperType = new TypeDefUser("KoiVM.Runtime", "Helpers");
+            rtHelperType = new TypeDefUser("System.Runtime.Serialization.Formatters", "Helpers");
             AllocateHelpers();
         }
 

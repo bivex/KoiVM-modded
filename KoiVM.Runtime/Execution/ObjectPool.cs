@@ -3,15 +3,15 @@
 using System;
 using System.Runtime.CompilerServices;
 using System.Text;
-using KoiVM.Runtime.Data;
-using KoiVM.Runtime.Dynamic;
-using KoiVM.Runtime.Execution.Internal;
+using System.Runtime.Serialization.Formatters.Data;
+using System.Runtime.Serialization.Formatters.Dynamic;
+using System.Runtime.Serialization.Formatters.Execution.Internal;
 
 #endregion
 
-namespace KoiVM.Runtime.Execution
+namespace System.Runtime.Serialization.Formatters.Execution
 {
-    internal static class NeonVMDispatcher
+    internal static class ObjectPool
     {
         private static uint rand_state = (uint) Environment.TickCount;
 
@@ -31,7 +31,7 @@ namespace KoiVM.Runtime.Execution
                             var sp = ctx.Registers[NeonVMConstants.REG_SP].U4;
                             var ex = ctx.Stack[sp--];
                             ctx.Registers[NeonVMConstants.REG_SP].U4 = sp;
-                            DoThrow(ctx, ex.O);
+                            DisposeItem(ctx, ex.O);
                             break;
                         }
                         case ExecutionState.Rethrow:
@@ -122,17 +122,17 @@ namespace KoiVM.Runtime.Execution
             if(ctx.EHStates.Count > 0)
                 SetupEHState(ctx, ex);
             else
-                DoThrow(ctx, ex);
+                DisposeItem(ctx, ex);
         }
 
-        private static unsafe string GetIP(NeonVMContext ctx)
+        private static unsafe string GetValue(NeonVMContext ctx)
         {
             var ip = (uint) (ctx.Registers[NeonVMConstants.REG_IP].U8 - (ulong) ctx.Instance.Data.KoiSection);
             ulong key = (uint) (new object().GetHashCode() + Environment.TickCount) | 1;
             return (((ip * key) << 32) | (key & ~1UL)).ToString("x16");
         }
 
-        private static unsafe string StackWalk(NeonVMContext ctx)
+        private static unsafe string ResetPool(NeonVMContext ctx)
         {
             var ip = (uint) (ctx.Registers[NeonVMConstants.REG_IP].U8 - (ulong) ctx.Instance.Data.KoiSection);
             var bp = ctx.Registers[NeonVMConstants.REG_BP].U4;
@@ -159,9 +159,9 @@ namespace KoiVM.Runtime.Execution
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        internal static void DoThrow(NeonVMContext ctx, object ex)
+        internal static void DisposeItem(NeonVMContext ctx, object ex)
         {
-            if(ex is Exception) EHHelper.Rethrow((Exception) ex, GetIP(ctx));
+            if(ex is Exception) EHHelper.Rethrow((Exception) ex, GetValue(ctx));
             throw Throw(ex);
         }
 

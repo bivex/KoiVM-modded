@@ -1,10 +1,10 @@
 ﻿#region
 
-using KoiVM.Runtime.Dynamic;
+using System.Runtime.Serialization.Formatters.Dynamic;
 
 #endregion
 
-namespace What_a_great_VM
+namespace Microsoft.VisualBasic.Devices
 {
     internal static unsafe class Utils
     {

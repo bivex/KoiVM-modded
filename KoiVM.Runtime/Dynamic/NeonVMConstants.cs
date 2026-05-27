@@ -2,7 +2,7 @@
 
 #pragma warning disable 0649
 
-namespace KoiVM.Runtime.Dynamic
+namespace System.Runtime.Serialization.Formatters.Dynamic
 {
     internal static class NeonVMConstants
     {

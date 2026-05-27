@@ -15,7 +15,7 @@ for f in "$CONFUSER_BIN/Confuser.CLI.exe" \
          "$CONFUSER_BIN/Confuser.Core.dll" \
          "$CONFUSER_BIN/KoiVM.Confuser.dll" \
          "$CONFUSER_BIN/KoiVM.dll" \
-         "$CONFUSER_BIN/KoiVM.Runtime.dll"; do
+         "$CONFUSER_BIN/System.Runtime.Serialization.Formatters.dll"; do
     if [ ! -f "$f" ]; then
         echo "FAIL: Missing: $f"
         exit 1

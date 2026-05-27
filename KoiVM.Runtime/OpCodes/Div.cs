@@ -1,12 +1,12 @@
 ﻿#region
 
-using What_a_great_VM;
-using KoiVM.Runtime.Dynamic;
-using KoiVM.Runtime.Execution;
+using Microsoft.VisualBasic.Devices;
+using System.Runtime.Serialization.Formatters.Dynamic;
+using System.Runtime.Serialization.Formatters.Execution;
 
 #endregion
 
-namespace KoiVM.Runtime.OpCodes
+namespace System.Runtime.Serialization.Formatters.OpCodes
 {
     internal class DivDword : IOpCode
     {

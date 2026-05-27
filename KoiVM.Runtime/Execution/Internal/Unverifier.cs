@@ -7,7 +7,7 @@ using System.Security.Permissions;
 
 #endregion
 
-namespace KoiVM.Runtime.Execution.Internal
+namespace System.Runtime.Serialization.Formatters.Execution.Internal
 {
     internal static class Unverifier
     {

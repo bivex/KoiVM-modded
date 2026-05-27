@@ -2,11 +2,11 @@
 
 using System;
 using System.Collections.Generic;
-using KoiVM.Runtime.VCalls;
+using System.Runtime.Serialization.Formatters.VCalls;
 
 #endregion
 
-namespace KoiVM.Runtime.Data
+namespace System.Runtime.Serialization.Formatters.Data
 {
     internal static class VCallMap
     {

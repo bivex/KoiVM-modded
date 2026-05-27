@@ -4,12 +4,12 @@ using System;
 using System.Collections;
 using System.Reflection;
 using System.Reflection.Emit;
-using What_a_great_VM;
-using KoiVM.Runtime.Data;
+using Microsoft.VisualBasic.Devices;
+using System.Runtime.Serialization.Formatters.Data;
 
 #endregion
 
-namespace KoiVM.Runtime.Execution.Internal
+namespace System.Runtime.Serialization.Formatters.Execution.Internal
 {
     internal static class NeonVMTrampoline
     {

@@ -1,4 +1,4 @@
-﻿namespace KoiVM.Runtime.Execution
+﻿namespace System.Runtime.Serialization.Formatters.Execution
 {
     internal enum PointerType
     {

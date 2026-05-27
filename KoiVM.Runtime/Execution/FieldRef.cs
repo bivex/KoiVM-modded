@@ -2,11 +2,11 @@
 
 using System;
 using System.Reflection;
-using KoiVM.Runtime.Execution.Internal;
+using System.Runtime.Serialization.Formatters.Execution.Internal;
 
 #endregion
 
-namespace KoiVM.Runtime.Execution
+namespace System.Runtime.Serialization.Formatters.Execution
 {
     internal class FieldRef : IReference
     {

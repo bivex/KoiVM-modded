@@ -1,12 +1,12 @@
 ﻿#region
 
 using System;
-using KoiVM.Runtime.Dynamic;
-using KoiVM.Runtime.Execution;
+using System.Runtime.Serialization.Formatters.Dynamic;
+using System.Runtime.Serialization.Formatters.Execution;
 
 #endregion
 
-namespace KoiVM.Runtime.VCalls
+namespace System.Runtime.Serialization.Formatters.VCalls
 {
     internal class Ckfinite : IVCall
     {

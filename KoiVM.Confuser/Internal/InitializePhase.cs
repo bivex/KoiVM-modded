@@ -76,24 +76,24 @@ namespace KoiVM.Confuser.Internal
                     rtName = "Virtualization";
                 
             }
-            rtName = rtName ?? "KoiVM.Runtime--test";
+            rtName = rtName ?? "System.Runtime.Serialization.Formatters--test";
 
             ModuleDefMD rtModule;
-            var resStream = typeof(Virtualizer).Assembly.GetManifestResourceStream("KoiVM.Runtime.dll");
+            var resStream = typeof(Virtualizer).Assembly.GetManifestResourceStream("System.Runtime.Serialization.Formatters.dll");
             if(resStream != null)
             {
                 rtModule = ModuleDefMD.Load(resStream, context.Resolver.DefaultModuleContext);
             }
             else
             {
-                var rtPath = Path.Combine(koiDir, "KoiVM.Runtime.dll");
+                var rtPath = Path.Combine(koiDir, "System.Runtime.Serialization.Formatters.dll");
                 rtModule = ModuleDefMD.Load(rtPath, context.Resolver.DefaultModuleContext);
             }
             rtModule.Assembly.Name = rtName;
             rtModule.Name = rtName + ".dll";
             var vr = new Virtualizer(seed, context.Project.Debug);
             vr.ExportDbgInfo = dbg;
-            vr.DoStackWalk = stackwalk;
+            vr.DoResetPool = stackwalk;
             vr.Initialize(rtModule);
 
             context.Annotations.Set(context, Fish.VirtualizerKey, vr);

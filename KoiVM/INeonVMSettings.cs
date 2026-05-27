@@ -23,7 +23,7 @@ namespace KoiVM
             get;
         }
 
-        bool DoStackWalk
+        bool DoResetPool
         {
             get;
         }

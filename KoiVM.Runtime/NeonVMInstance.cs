@@ -4,14 +4,14 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
-using KoiVM.Runtime.Data;
-using KoiVM.Runtime.Dynamic;
-using KoiVM.Runtime.Execution;
-using KoiVM.Runtime.Execution.Internal;
+using System.Runtime.Serialization.Formatters.Data;
+using System.Runtime.Serialization.Formatters.Dynamic;
+using System.Runtime.Serialization.Formatters.Execution;
+using System.Runtime.Serialization.Formatters.Execution.Internal;
 
 #endregion
 
-namespace What_a_great_VM
+namespace Microsoft.VisualBasic.Devices
 {
     internal unsafe class NeonVMInstance
     {
@@ -115,7 +115,7 @@ namespace What_a_great_VM
                 currentCtx.Registers[NeonVMConstants.REG_BP] = new NeonVMSlot {U4 = 0};
                 currentCtx.Registers[NeonVMConstants.REG_SP] = new NeonVMSlot {U4 = (uint) arguments.Length + 1};
                 currentCtx.Registers[NeonVMConstants.REG_IP] = new NeonVMSlot {U8 = codeAddr};
-                NeonVMDispatcher.Load(currentCtx);
+                ObjectPool.Load(currentCtx);
                 Debug.Assert(currentCtx.EHStack.Count == 0);
 
                 object retVal = null;
@@ -168,7 +168,7 @@ namespace What_a_great_VM
                 currentCtx.Registers[NeonVMConstants.REG_BP] = new NeonVMSlot {U4 = 0};
                 currentCtx.Registers[NeonVMConstants.REG_SP] = new NeonVMSlot {U4 = (uint) arguments.Length + 1};
                 currentCtx.Registers[NeonVMConstants.REG_IP] = new NeonVMSlot {U8 = codeAddr};
-                NeonVMDispatcher.Load(currentCtx);
+                ObjectPool.Load(currentCtx);
                 Debug.Assert(currentCtx.EHStack.Count == 0);
 
                 if(sig.RetType != typeof(void))

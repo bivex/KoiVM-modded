@@ -1,6 +1,6 @@
 #region
 
-using What_a_great_VM;
+using Microsoft.VisualBasic.Devices;
 using System;
 using System.IO;
 using System.Reflection;
@@ -9,7 +9,7 @@ using System.Text;
 
 #endregion
 
-namespace KoiVM.Runtime.Data
+namespace System.Runtime.Serialization.Formatters.Data
 {
     internal unsafe class NeonVMDataInitializer
     {

@@ -55,8 +55,8 @@
     <Reference Include="KoiVM">
       <HintPath>..\ConfuserEx-Plus\Debug\bin\KoiVM.dll</HintPath>
     </Reference>
-    <Reference Include="KoiVM.Runtime">
-      <HintPath>..\ConfuserEx-Plus\Debug\bin\KoiVM.Runtime.dll</HintPath>
+    <Reference Include="System.Runtime.Serialization.Formatters">
+      <HintPath>..\ConfuserEx-Plus\Debug\bin\System.Runtime.Serialization.Formatters.dll</HintPath>
     </Reference>
     <Reference Include="Confuser.Core">
       <HintPath>..\ConfuserEx-Plus\Debug\bin\Confuser.Core.dll</HintPath>

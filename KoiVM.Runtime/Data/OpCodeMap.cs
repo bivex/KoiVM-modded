@@ -2,11 +2,11 @@
 
 using System;
 using System.Collections.Generic;
-using KoiVM.Runtime.OpCodes;
+using System.Runtime.Serialization.Formatters.OpCodes;
 
 #endregion
 
-namespace KoiVM.Runtime.Data
+namespace System.Runtime.Serialization.Formatters.Data
 {
     internal static class OpCodeMap
     {

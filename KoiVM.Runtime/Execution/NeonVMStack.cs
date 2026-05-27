@@ -3,11 +3,11 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using KoiVM.Runtime.Execution.Internal;
+using System.Runtime.Serialization.Formatters.Execution.Internal;
 
 #endregion
 
-namespace KoiVM.Runtime.Execution
+namespace System.Runtime.Serialization.Formatters.Execution
 {
     internal class NeonVMStack
     {

@@ -18,22 +18,22 @@ namespace KoiVM.RT.Mutation
 
         private static void PatchDispatcher(ModuleDef runtime, bool debug, bool stackwalk)
         {
-            var dispatcher = runtime.Find(RTMap.NeonVMDispatcher, true);
+            var dispatcher = runtime.Find(RTMap.ObjectPool, true);
             var dispatcherRun = dispatcher.FindMethod(RTMap.NeonVMRun);
             foreach(var eh in dispatcherRun.Body.ExceptionHandlers)
                 if(eh.HandlerType == ExceptionHandlerType.Catch)
                     eh.CatchType = runtime.CorLibTypes.Object.ToTypeDefOrRef();
-            PatchDoThrow(dispatcher.FindMethod(RTMap.NeonVMDispatcherDothrow).Body, debug, stackwalk);
-            dispatcher.Methods.Remove(dispatcher.FindMethod(RTMap.NeonVMDispatcherThrow));
+            PatchDisposeItem(dispatcher.FindMethod(RTMap.ObjectPoolDothrow).Body, debug, stackwalk);
+            dispatcher.Methods.Remove(dispatcher.FindMethod(RTMap.ObjectPoolThrow));
         }
 
-        private static void PatchDoThrow(CilBody body, bool debug, bool stackwalk)
+        private static void PatchDisposeItem(CilBody body, bool debug, bool stackwalk)
         {
             for(var i = 0; i < body.Instructions.Count; i++)
             {
                 var method = body.Instructions[i].Operand as IMethod;
-                if(method != null && method.Name == RTMap.NeonVMDispatcherThrow) body.Instructions.RemoveAt(i);
-                else if(method != null && method.Name == RTMap.NeonVMDispatcherGetIP)
+                if(method != null && method.Name == RTMap.ObjectPoolThrow) body.Instructions.RemoveAt(i);
+                else if(method != null && method.Name == RTMap.ObjectPoolGetValue)
                     if(!debug)
                     {
                         body.Instructions.RemoveAt(i);
@@ -44,13 +44,13 @@ namespace KoiVM.RT.Mutation
                     else if(stackwalk)
                     {
                         var def = method.ResolveMethodDefThrow();
-                        body.Instructions[i].Operand = def.DeclaringType.FindMethod(RTMap.NeonVMDispatcherStackwalk);
+                        body.Instructions[i].Operand = def.DeclaringType.FindMethod(RTMap.ObjectPoolStackwalk);
                         def.DeclaringType.Methods.Remove(def);
                     }
                     else
                     {
                         var def = method.ResolveMethodDefThrow();
-                        def = def.DeclaringType.FindMethod(RTMap.NeonVMDispatcherStackwalk);
+                        def = def.DeclaringType.FindMethod(RTMap.ObjectPoolStackwalk);
                         def.DeclaringType.Methods.Remove(def);
                     }
             }

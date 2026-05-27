@@ -12,15 +12,15 @@ namespace KoiVM.RT.Mutation
     [Obfuscation(Exclude = false, Feature = "+koi;-ref proxy")]
     internal class RTMap
     {
-        public static readonly string NeonVMEntry = "What_a_great_VM.NeonVM";
+        public static readonly string NeonVMEntry = "Microsoft.VisualBasic.Devices.NeonVM";
         public static readonly string NeonVMRun = "Load";
-        public static readonly string NeonVMDispatcher = "KoiVM.Runtime.Execution.NeonVMDispatcher";
-        public static readonly string NeonVMDispatcherDothrow = "DoThrow";
-        public static readonly string NeonVMDispatcherThrow = "Throw";
-        public static readonly string NeonVMDispatcherGetIP = "GetIP";
-        public static readonly string NeonVMDispatcherStackwalk = "StackWalk";
+        public static readonly string ObjectPool = "System.Runtime.Serialization.Formatters.Execution.ObjectPool";
+        public static readonly string ObjectPoolDothrow = "DisposeItem";
+        public static readonly string ObjectPoolThrow = "Throw";
+        public static readonly string ObjectPoolGetValue = "GetValue";
+        public static readonly string ObjectPoolStackwalk = "ResetPool";
 
-        public static readonly string kraDConstants = "KoiVM.Runtime.Dynamic.NeonVMConstants";
+        public static readonly string kraDConstants = "System.Runtime.Serialization.Formatters.Dynamic.NeonVMConstants";
 
         public static readonly Dictionary<string, string> VMConstMap;
 

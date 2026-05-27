@@ -1,10 +1,10 @@
 ﻿#region
 
-using KoiVM.Runtime.Execution;
+using System.Runtime.Serialization.Formatters.Execution;
 
 #endregion
 
-namespace KoiVM.Runtime.VCalls
+namespace System.Runtime.Serialization.Formatters.VCalls
 {
     internal interface IVCall
     {

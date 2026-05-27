@@ -5,7 +5,7 @@ using System.Diagnostics;
 
 #endregion
 
-namespace KoiVM.Runtime.Execution.Internal
+namespace System.Runtime.Serialization.Formatters.Execution.Internal
 {
     // Unboxed VT is stored in these boxes, boxed VT is stored as raw object.
 

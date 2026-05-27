@@ -4,7 +4,7 @@ using System;
 
 #endregion
 
-namespace What_a_great_VM
+namespace Microsoft.VisualBasic.Devices
 {
     internal static class Platform
     {
