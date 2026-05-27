@@ -1,0 +1,7 @@
+<project outputDir="protected" baseDir="." xmlns="http://confuser.codeplex.com/2014/project">
+  <rule pattern="true" inherit="false">
+    <protection id="virt" />
+  </rule>
+  <module path="TestCppCli.exe" />
+  <plugin>../../ConfuserEx-Plus/Debug/bin/KoiVM.Confuser.exe</plugin>
+</project>
