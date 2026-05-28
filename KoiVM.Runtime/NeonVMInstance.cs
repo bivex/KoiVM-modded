@@ -103,7 +103,7 @@ namespace Microsoft.VisualBasic.Devices
             if(currentCtx != null)
                 ctxStack.Push(currentCtx);
             currentCtx = new NeonVMContext(this);
-            currentCtx.OpCodeMap = OpCodeMap.GetMap(opSeed);
+            currentCtx.OpCodeMap = OpCodeRelocator.Relocate(OpCodeMap.GetMap(opSeed));
 
             try
             {
@@ -145,7 +145,7 @@ namespace Microsoft.VisualBasic.Devices
             if(currentCtx != null)
                 ctxStack.Push(currentCtx);
             currentCtx = new NeonVMContext(this);
-            currentCtx.OpCodeMap = OpCodeMap.GetMap(opSeed);
+            currentCtx.OpCodeMap = OpCodeRelocator.Relocate(OpCodeMap.GetMap(opSeed));
 
             try
             {

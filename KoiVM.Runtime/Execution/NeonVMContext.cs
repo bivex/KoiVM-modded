@@ -8,13 +8,15 @@ using System.Runtime.Serialization.Formatters.Dynamic;
 
 namespace System.Runtime.Serialization.Formatters.Execution
 {
+    internal delegate void OpCodeHandler(NeonVMContext ctx, out ExecutionState state);
+
     internal class NeonVMContext
     {
         private const int NumRegisters = 16;
         public readonly List<EHFrame> EHStack = new List<EHFrame>();
         public readonly List<EHState> EHStates = new List<EHState>();
         public readonly NeonVMInstance Instance;
-        public IOpCode[] OpCodeMap;
+        public OpCodeHandler[] OpCodeMap;
 
         public readonly NeonVMSlot[] Registers = new NeonVMSlot[16];
         public readonly NeonVMStack Stack = new NeonVMStack();

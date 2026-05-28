@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization.Formatters.OpCodes;
+using System.Runtime.Serialization.Formatters.Execution;
 
 #endregion
 
@@ -28,19 +29,28 @@ namespace System.Runtime.Serialization.Formatters.Data
             return opCodes[code];
         }
 
-        public static IOpCode[] GetMap(byte seed)
+        public static OpCodeHandler[] GetMap(byte seed)
         {
-            var map = new IOpCode[256];
-            foreach (var entry in opCodes) map[entry.Key] = entry.Value;
+            var map = new OpCodeHandler[256];
+            var temp_map = new IOpCode[256];
+            foreach (var entry in opCodes) temp_map[entry.Key] = entry.Value;
 
             // Replicate the shuffle logic from OpCodeDescriptor.cs
             var random = new Random(seed);
             for (int i = 0; i < 256; i++)
             {
                 int j = random.Next(256);
-                var temp = map[i];
-                map[i] = map[j];
-                map[j] = temp;
+                var temp = temp_map[i];
+                temp_map[i] = temp_map[j];
+                temp_map[j] = temp;
+            }
+
+            for (int i = 0; i < 256; i++)
+            {
+                if (temp_map[i] != null)
+                {
+                    map[i] = temp_map[i].Load;
+                }
             }
             return map;
         }

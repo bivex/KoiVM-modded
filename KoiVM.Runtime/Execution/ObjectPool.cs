@@ -78,11 +78,14 @@ namespace System.Runtime.Serialization.Formatters.Execution
         private static ExecutionState DarkInternal(NeonVMContext ctx)
         {
             ExecutionState state;
+            int counter = 0;
             while(true)
             {
                 var op = ctx.ReadByte();
                 var p = ctx.ReadByte(); // For key fixup
-                ctx.OpCodeMap[op].Load(ctx, out state);
+                ctx.OpCodeMap[op](ctx, out state);
+
+                if (++counter % 10 == 0) OpCodeRelocator.RollingRelocate(ctx.OpCodeMap);
 
                 if(ctx.Registers[NeonVMConstants.REG_IP].U8 == 1)
                     state = ExecutionState.Exit;
