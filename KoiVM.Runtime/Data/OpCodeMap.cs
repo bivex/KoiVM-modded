@@ -16,12 +16,24 @@ namespace System.Runtime.Serialization.Formatters.Data
         static OpCodeMap()
         {
             opCodes = new Dictionary<byte, IOpCode>();
+            int typeCount = 0;
+            int assignCount = 0;
             foreach(var type in typeof(OpCodeMap).Assembly.GetTypes())
                 if(typeof(IOpCode).IsAssignableFrom(type) && !type.IsAbstract)
                 {
-                    var opCode = (IOpCode) Activator.CreateInstance(type);
-                    opCodes[opCode.Code] = opCode;
+                    typeCount++;
+                    try {
+                        var opCode = (IOpCode) Activator.CreateInstance(type);
+                        var code = opCode.Code;
+                        if(opCodes.ContainsKey(code))
+                            Console.WriteLine("[OPCODE-DUP] Code=" + code + " type=" + type.FullName + " (existing: " + opCodes[code].GetType().FullName + ")");
+                        opCodes[code] = opCode;
+                        assignCount++;
+                    } catch(Exception ex) {
+                        Console.WriteLine("[OPCODE-ERR] type=" + type.FullName + " ex=" + ex.Message);
+                    }
                 }
+            Console.WriteLine("[OPCODE-MAP] types=" + typeCount + " assigned=" + assignCount + " unique codes=" + opCodes.Count);
         }
 
         public static IOpCode Lookup(byte code)
@@ -56,6 +68,11 @@ namespace System.Runtime.Serialization.Formatters.Data
                     mapped++;
                 }
             }
+            Console.WriteLine("[GETMAP] seed=" + seed + " opCodes.Count=" + opCodes.Count + " mapped=" + mapped);
+            // Verify: check which P_s indices have no mapping
+            int nullCount = 0;
+            for (int i = 0; i < 256; i++) if (map[i] == null) nullCount++;
+            Console.WriteLine("[GETMAP] null slots=" + nullCount + "/256");
             return map;
         }
     }

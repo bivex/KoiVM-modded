@@ -29,13 +29,15 @@ namespace System.Runtime.Serialization.Formatters.Execution
         public unsafe byte ReadByte()
         {
             var key = Registers[NeonVMConstants.REG_K1].U4;
-            var ip = (byte*) Registers[NeonVMConstants.REG_IP].U8++;
+            var ip = (byte*) Registers[NeonVMConstants.REG_IP].U8;
+            var rawEncrypted = *ip;
             var b = (byte) (*ip ^ key);
 
             var multiplier = (byte)(key >> 8);
             
             key = (key & 0xFFFFFF00) | (byte) ((byte)key * multiplier + b);
             Registers[NeonVMConstants.REG_K1].U4 = key;
+            Registers[NeonVMConstants.REG_IP].U8++;
             return b;
         }
     }

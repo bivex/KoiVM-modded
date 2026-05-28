@@ -81,11 +81,21 @@ namespace System.Runtime.Serialization.Formatters.Execution
             int counter = 0;
             while(true)
             {
+                var k1Before = ctx.Registers[NeonVMConstants.REG_K1].U4;
+                var ipBefore = ctx.Registers[NeonVMConstants.REG_IP].U8;
                 var op = ctx.ReadByte();
                 var p = ctx.ReadByte(); // For key fixup
                 var handler = ctx.OpCodeMap[op];
                 if(handler == null)
-                    throw new InvalidOperationException("OpCodeMap[" + op + "] is null (K1=0x" + ctx.Registers[NeonVMConstants.REG_K1].U4.ToString("x8") + ")");
+                {
+                    int handlers = 0;
+                    for (int i = 0; i < 256; i++) if (ctx.OpCodeMap[i] != null) handlers++;
+                    throw new InvalidOperationException("OpCodeMap[" + op + "] is null (K1=0x" + k1Before.ToString("x8") +
+                        " IP=0x" + ipBefore.ToString("x") +
+                        " handlers=" + handlers +
+                        " counter=" + counter + ")");
+                }
+                if (counter < 50) Console.WriteLine("[VM] #" + counter + " op=" + op + " p=" + p + " K1=0x" + k1Before.ToString("x8"));
                 handler(ctx, out state);
 
                 if (++counter % 10 == 0) OpCodeRelocator.RollingRelocate(ctx.OpCodeMap);
