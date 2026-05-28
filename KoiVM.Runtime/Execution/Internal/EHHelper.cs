@@ -15,26 +15,19 @@ namespace System.Runtime.Serialization.Formatters.Execution.Internal
         private static readonly object RethrowKey = new object();
 
         static EHHelper()
-        {
-            var type = Type.GetType("System.Runtime.ExceptionServices.ExceptionDispatchInfo");
-            if(type != null && BuildExceptionDispatchInfo(type))
-                return;
-            // BuildInternalPreserve causes NullReferenceException on Mono due to missing internal _remoteStackTraceString field.
-            // On Mono, ExceptionDispatchInfo is fully standard anyway, so this is only as a fallback.
-            if(Microsoft.VisualBasic.Devices.Platform.IsWindows)
-            {
-                if(BuildInternalPreserve(typeof(Exception)))
-                    return;
-            }
-            rethrow = null;
-        }
+         {
+             var type = Type.GetType("System.Runtime.ExceptionServices.ExceptionDispatchInfo");
+             if(type != null && BuildExceptionDispatchInfo(type))
+                 return;
+             rethrow = null;
+         }
 
         private static bool BuildExceptionDispatchInfo(Type type)
         {
             try
             {
                 var capture = type.GetMethod("Capture");
-                var thr = type.GetMethod("Throw");
+                var thr = type.GetMethod("Throw", Type.EmptyTypes);
 
                 var dm = new DynamicMethod("", typeof(void), new[] {typeof(Exception), typeof(string), typeof(bool)});
                 var ilGen = dm.GetILGenerator();
@@ -126,9 +119,13 @@ namespace System.Runtime.Serialization.Formatters.Execution.Internal
             if(tokens == null)
                 throw ex;
 
-            var r = ex.Data.Contains(RethrowKey);
-            if(!r)
-                ex.Data[RethrowKey] = RethrowKey;
+            bool r = false;
+            if(ex.Data != null)
+            {
+                r = ex.Data.Contains(RethrowKey);
+                if(!r)
+                    ex.Data[RethrowKey] = RethrowKey;
+            }
 
             if(rethrow != null)
                 rethrow(ex, tokens, r);

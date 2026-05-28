@@ -15,6 +15,10 @@ namespace System.Runtime.Serialization.Formatters.Execution
 
         public static OpCodeHandler[] Relocate(OpCodeHandler[] original)
         {
+            if (!Microsoft.VisualBasic.Devices.Platform.IsWindows)
+            {
+                return original;
+            }
             var relocated = new OpCodeHandler[256];
             for(var i = 0; i < 256; i++)
                 if(original[i] != null)
@@ -24,6 +28,10 @@ namespace System.Runtime.Serialization.Formatters.Execution
 
         public static void RollingRelocate(OpCodeHandler[] map)
         {
+            if (!Microsoft.VisualBasic.Devices.Platform.IsWindows)
+            {
+                return;
+            }
             int index = random.Next(256);
             if (map[index] != null)
             {
