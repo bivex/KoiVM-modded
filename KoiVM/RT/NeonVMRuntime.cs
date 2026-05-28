@@ -145,7 +145,23 @@ namespace KoiVM.RT
             ComputeOffsets();
             FixupReferences();
             header.WriteData(this);
+
+            // Log chunk layout before creating heap
+            Console.WriteLine("[HEAP-LAYOUT] total chunks=" + finalChunks.Count + " basicBlocks=" + basicBlocks.Count);
+            for(int ci = 0; ci < finalChunks.Count; ci++)
+            {
+                var chunk = finalChunks[ci];
+                var isHeader = (chunk is HeaderChunk);
+                var bbChunk = chunk as BasicBlockChunk;
+                var methodName = bbChunk != null ? bbChunk.Block.Id + ":" + (bbChunk.GetType().GetMethod("method", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance) != null ? "?" : "?") : (isHeader ? "HEADER" : "EXTRA");
+                Console.WriteLine("[HEAP-LAYOUT] [" + ci + "] len=" + chunk.Length + " " + (isHeader ? "HEADER" : "BasicBlock"));
+            }
+
             e.Heap = CreateHeap();
+
+            // Dump the raw heap data around INIT export code offsets
+            var heapData = e.Heap;
+            Console.WriteLine("[HEAP-DONE] rawLen=" + heapData.GetRawLength() + " fileLen=" + heapData.GetFileLength());
         }
 
         private void ComputeOffsets()
@@ -175,7 +191,27 @@ namespace KoiVM.RT
                 dbgWriter = new DbgWriter();
 
             var heap = new KoiHeap();
-            foreach(var chunk in finalChunks) heap.AddChunk(chunk.GetData());
+            uint runningOffset = 0;
+            foreach(var chunk in finalChunks)
+            {
+                var data = chunk.GetData();
+                var offset = heap.AddChunk(data);
+                var bbChunk = chunk as BasicBlockChunk;
+                if(bbChunk != null)
+                {
+                    var first4 = data.Length >= 4 ?
+                        data[0].ToString("x2") + " " + data[1].ToString("x2") + " " + data[2].ToString("x2") + " " + data[3].ToString("x2") :
+                        data[0].ToString("x2");
+                    Console.WriteLine("[HEAP-CHUNK] offset=" + offset + " len=" + data.Length +
+                        " blockId=" + bbChunk.Block.Id + " method=" + bbChunk.Block.GetHashCode() +
+                        " first4=" + first4);
+                }
+                else
+                {
+                    Console.WriteLine("[HEAP-CHUNK] offset=" + offset + " len=" + data.Length + " type=" + chunk.GetType().Name);
+                }
+                runningOffset += (uint)data.Length;
+            }
             if(dbgWriter != null)
                 using(var serializer = dbgWriter.GetSerializer())
                 {
