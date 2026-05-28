@@ -62,14 +62,16 @@ namespace KoiVM.RT
                 var instrStart = instr.Offset - firstInstr.Offset;
                 var instrEnd = instrStart + rt.serializer.ComputeLength(instr);
 
+                var multiplier = (byte)(currentKey >> 8);
+
                 // Encrypt OpCode
                 {
                     var b = data[instrStart];
-                    data[instrStart] ^= currentKey;
-                    currentKey = (byte) (currentKey * 7 + b);
+                    data[instrStart] ^= (byte)currentKey;
+                    currentKey = (currentKey & 0xFFFFFF00) | (byte) ((byte)currentKey * multiplier + b);
                 }
 
-                byte? fixupTarget = null;
+                uint? fixupTarget = null;
                 if(instr.Annotation == InstrAnnotation.JUMP ||
                    instr == lastInstr)
                 {
@@ -89,7 +91,8 @@ namespace KoiVM.RT
 
                 if(fixupTarget != null)
                 {
-                    var fixup = CalculateFixupByte(fixupTarget.Value, data, currentKey, instrStart + 1, instrEnd);
+                    var invMultiplier = (byte)(currentKey >> 16);
+                    var fixup = CalculateFixupByte(fixupTarget.Value, data, currentKey, instrStart + 1, instrEnd, multiplier, invMultiplier);
                     data[instrStart + 1] = fixup;
                 }
 
@@ -97,11 +100,11 @@ namespace KoiVM.RT
                 for(var i = instrStart + 1; i < instrEnd; i++)
                 {
                     var b = data[i];
-                    data[i] ^= currentKey;
-                    currentKey = (byte) (currentKey * 7 + b);
+                    data[i] ^= (byte)currentKey;
+                    currentKey = (currentKey & 0xFFFFFF00) | (byte) ((byte)currentKey * multiplier + b);
                 }
                 if(fixupTarget != null)
-                    Debug.Assert(currentKey == fixupTarget.Value);
+                    Debug.Assert((uint)currentKey == fixupTarget.Value);
 
                 if(instr.OpCode == ILOpCode.CALL)
                 {
@@ -114,17 +117,11 @@ namespace KoiVM.RT
             return data;
         }
 
-        private static byte CalculateFixupByte(byte target, byte[] data, uint currentKey, uint rangeStart, uint rangeEnd)
+        private static byte CalculateFixupByte(uint target, byte[] data, uint currentKey, uint rangeStart, uint rangeEnd, byte multiplier, byte invMultiplier)
         {
-            // Calculate fixup byte
-            // f = k3 * 7 + d3
-            // f = (k2 * 7 + d2) * 7 + d3
-            // f = ((k1 * 7 + d1) * 7 + d2) * 7 + d3
-            // f = (((k0 * 7 + d0) * 7 + d1) * 7 + d2) * 7 + d3
-            // 7 ^ -1 (mod 256) = 183
-            var fixupByte = target;
-            for(var i = rangeEnd - 1; i > rangeStart; i--) fixupByte = (byte) ((fixupByte - data[i]) * 183);
-            fixupByte -= (byte) (currentKey * 7);
+            var fixupByte = (byte)target;
+            for(var i = rangeEnd - 1; i > rangeStart; i--) fixupByte = (byte) ((fixupByte - data[i]) * invMultiplier);
+            fixupByte -= (byte) ((byte)currentKey * multiplier);
             return fixupByte;
         }
     }

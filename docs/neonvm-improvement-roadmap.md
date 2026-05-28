@@ -83,7 +83,7 @@ Key is stored as the first byte of the encrypted block, and the encryption is tr
 | **P1** | EH shadowing | High | Closes richest information leak |
 | **P1** | Opaque predicates in handlers | Medium | Slows symbolic execution exponentially |
 | **P2** | Dynamic dispatch scheduling | High | Breaks trace-based attacks |
-| **P2** | Per-chunk independent entropy | Medium | Prevents single-point-of-failure seed |
+| **P2** | Per-chunk independent entropy | Medium | Working | Prevents single-point-of-failure seed |
 | **P3** | Handler relocation at runtime | High | Moves target during analysis |
 | **P3** | WASM / NativeAOT layer | Very High | Future direction, not .NET-native |
 

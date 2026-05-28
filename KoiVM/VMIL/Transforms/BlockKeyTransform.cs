@@ -32,8 +32,8 @@ namespace KoiVM.VMIL.Transforms
             var key = Keys[tr.Block];
             methodInfo.BlockKeys[tr.Block] = new VMBlockKey
             {
-                EntryKey = (byte) key.Entry,
-                ExitKey = (byte) key.Exit
+                EntryKey = key.Entry,
+                ExitKey = key.Exit
             };
         }
 
@@ -102,11 +102,21 @@ namespace KoiVM.VMIL.Transforms
 
                 var entryId = key.Entry;
                 if(!idMap.TryGetValue(entryId, out key.Entry))
-                    key.Entry = idMap[entryId] = (byte) runtime.Descriptor.Random.Next();
+                {
+                    uint rolling = Entropy.DeriveByte(runtime.Descriptor.Settings.Seed, entryId, "block_entry");
+                    uint mult = Entropy.DeriveByte(runtime.Descriptor.Settings.Seed, entryId, "block_entry_mult") | 1u;
+                    uint inv = Entropy.ModInverse((byte)mult);
+                    key.Entry = idMap[entryId] = rolling | (mult << 8) | (inv << 16);
+                }
 
                 var exitId = key.Exit;
                 if(!idMap.TryGetValue(exitId, out key.Exit))
-                    key.Exit = idMap[exitId] = (byte) runtime.Descriptor.Random.Next();
+                {
+                    uint rolling = Entropy.DeriveByte(runtime.Descriptor.Settings.Seed, exitId, "block_exit");
+                    uint mult = Entropy.DeriveByte(runtime.Descriptor.Settings.Seed, exitId, "block_exit_mult") | 1u;
+                    uint inv = Entropy.ModInverse((byte)mult);
+                    key.Exit = idMap[exitId] = rolling | (mult << 8) | (inv << 16);
+                }
 
                 Keys[block] = key;
             }

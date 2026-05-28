@@ -89,11 +89,19 @@ namespace KoiVM.VM
             NeonVMMethodInfo ret;
             if(!methodInfos.TryGetValue(method, out ret))
             {
-                var k = random.Next();
+                var seed = random.Next();
+                uint entryRolling = Entropy.DeriveByte(seed, (uint)method.Rid, "method_entry");
+                uint entryMult = Entropy.DeriveByte(seed, (uint)method.Rid, "method_entry_mult") | 1u;
+                uint entryInv = Entropy.ModInverse((byte)entryMult);
+
+                uint exitRolling = Entropy.DeriveByte(seed, (uint)method.Rid, "method_exit");
+                uint exitMult = Entropy.DeriveByte(seed, (uint)method.Rid, "method_exit_mult") | 1u;
+                uint exitInv = Entropy.ModInverse((byte)exitMult);
+
                 ret = new NeonVMMethodInfo
                 {
-                    EntryKey = (byte) k,
-                    ExitKey = (byte) (k >> 8)
+                    EntryKey = entryRolling | (entryMult << 8) | (entryInv << 16),
+                    ExitKey = exitRolling | (exitMult << 8) | (exitInv << 16)
                 };
                 methodInfos[method] = ret;
             }

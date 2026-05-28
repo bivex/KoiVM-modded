@@ -28,7 +28,11 @@ namespace System.Runtime.Serialization.Formatters.Execution
             var key = Registers[NeonVMConstants.REG_K1].U4;
             var ip = (byte*) Registers[NeonVMConstants.REG_IP].U8++;
             var b = (byte) (*ip ^ key);
-            key = key * 7 + b;
+
+            var multiplier = (byte)(key >> 8);
+            if (multiplier == 0) multiplier = 7;
+            
+            key = (key & 0xFFFFFF00) | (byte) ((byte)key * multiplier + b);
             Registers[NeonVMConstants.REG_K1].U4 = key;
             return b;
         }

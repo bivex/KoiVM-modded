@@ -11,8 +11,8 @@ namespace KoiVM.VM
     {
         public readonly Dictionary<IBasicBlock, VMBlockKey> BlockKeys;
         public readonly HashSet<NeonVMRegisters> UsedRegister;
-        public byte EntryKey;
-        public byte ExitKey;
+        public uint EntryKey;
+        public uint ExitKey;
 
         public ScopeBlock RootScope;
 
@@ -25,7 +25,7 @@ namespace KoiVM.VM
 
     public struct VMBlockKey
     {
-        public byte EntryKey;
-        public byte ExitKey;
+        public uint EntryKey;
+        public uint ExitKey;
     }
 }
