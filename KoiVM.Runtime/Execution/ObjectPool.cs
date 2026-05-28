@@ -83,15 +83,10 @@ namespace System.Runtime.Serialization.Formatters.Execution
             {
                 var op = ctx.ReadByte();
                 var p = ctx.ReadByte(); // For key fixup
-                if (ctx.OpCodeMap == null)
-                {
-                    Console.WriteLine("[DEBUG-OP] ctx.OpCodeMap is null!");
-                }
-                else if (ctx.OpCodeMap[op] == null)
-                {
-                    Console.WriteLine("[DEBUG-OP] ctx.OpCodeMap[{0}] is null! Map size: {1}", op, ctx.OpCodeMap.Length);
-                }
-                ctx.OpCodeMap[op](ctx, out state);
+                var handler = ctx.OpCodeMap[op];
+                if(handler == null)
+                    throw new InvalidOperationException("OpCodeMap[" + op + "] is null (K1=0x" + ctx.Registers[NeonVMConstants.REG_K1].U4.ToString("x8") + ")");
+                handler(ctx, out state);
 
                 if (++counter % 10 == 0) OpCodeRelocator.RollingRelocate(ctx.OpCodeMap);
 

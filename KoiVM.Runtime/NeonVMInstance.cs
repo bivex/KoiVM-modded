@@ -69,7 +69,8 @@ namespace Microsoft.VisualBasic.Devices
         {
             var initFunc = Data.LookupExport(NeonVMConstants.HELPER_INIT);
             var codeAddr = (ulong) (Data.KoiSection + initFunc.CodeOffset);
-            Load(codeAddr, initFunc.EntryKey, 0, initFunc.Signature, new object[0]);
+            Console.WriteLine("[INIT] HELPER_INIT=" + NeonVMConstants.HELPER_INIT + " CodeOffset=" + initFunc.CodeOffset + " EntryKey=0x" + initFunc.EntryKey.ToString("x6") + " OpCodeSeed=" + initFunc.OpCodeSeed + " codeAddr=0x" + codeAddr.ToString("x"));
+            Load(codeAddr, initFunc.EntryKey, initFunc.OpCodeSeed, initFunc.Signature, new object[0]);
         }
 
         public object Load(uint s2, uint s3, uint id, object[] arguments)
@@ -81,8 +82,9 @@ namespace Microsoft.VisualBasic.Devices
 
         public object Load(ulong codeAddr, uint key, uint sigId, object[] arguments)
         {
-            var sig = Data.LookupExport(sigId).Signature;
-            return Load(codeAddr, key, 0, sig, arguments); // sigId doesn't have seed
+            var export = Data.LookupExport(sigId);
+            var sig = export.Signature;
+            return Load(codeAddr, key, export.OpCodeSeed, sig, arguments);
         }
 
         public void Load(uint s2, uint s3, uint id, void*[] typedRefs, void* retTypedRef)
@@ -94,8 +96,9 @@ namespace Microsoft.VisualBasic.Devices
 
         public void Load(ulong codeAddr, uint key, uint sigId, void*[] typedRefs, void* retTypedRef)
         {
-            var sig = Data.LookupExport(sigId).Signature;
-            Load(codeAddr, key, 0, sig, typedRefs, retTypedRef);
+            var export = Data.LookupExport(sigId);
+            var sig = export.Signature;
+            Load(codeAddr, key, export.OpCodeSeed, sig, typedRefs, retTypedRef);
         }
 
         private object Load(ulong codeAddr, uint key, byte opSeed, NeonVMFuncSig sig, object[] arguments)

@@ -47,13 +47,18 @@ namespace System.Runtime.Serialization.Formatters.Data
                 P_s[j] = temp;
             }
 
+            int mapped = 0;
             for (int i = 0; i < 256; i++)
             {
                 if (temp_map[i] != null)
                 {
                     map[P_s[i]] = temp_map[i].Load;
+                    mapped++;
                 }
             }
+            var sb = new System.Text.StringBuilder();
+            for(int i = 0; i < 256; i++) if(map[i] != null) sb.Append(i + ",");
+            Console.WriteLine("[GETMAP] seed=" + seed + " mapped=" + mapped + " indices=[" + sb + "]");
             return map;
         }
     }

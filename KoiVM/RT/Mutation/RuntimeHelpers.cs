@@ -64,7 +64,7 @@ namespace KoiVM.RT.Mutation
             {
                 new IRInstruction(IROpCode.VCALL, IRConstant.FromI4(rt.Descriptor.Runtime.VMCall[NeonVMCalls.EXIT]))
             });
-            scope.Content.Add(initBlock);
+            scope.Content.Add(retnBlock);
 
             CompileHelpers(methodINIT, scope);
 
