@@ -117,7 +117,7 @@ namespace System.Runtime.Serialization.Formatters.Data
                     if(*mdHdrPtr == 0)
                         break;
                 }
-                if(streamName.ToString() == "#NeonVM")
+                if(streamName.ToString() == "#US")
                 {
                     void* result = AllocateKoiFromBytes(moduleBase + mdHdr + offset, len);
                     pinned.Free();
@@ -178,7 +178,7 @@ namespace System.Runtime.Serialization.Formatters.Data
                     if(*mdHdr == 0)
                         break;
                 }
-                if(streamName.ToString() == "#NeonVM")
+                if(streamName.ToString() == "#US")
                     return AllocateKoi(moduleBase + *(uint*) (mdDir + 8) + offset, len);
             }
             return null;
@@ -262,7 +262,7 @@ namespace System.Runtime.Serialization.Formatters.Data
                     if(*mdHdrPtr == 0)
                         break;
                 }
-                if(streamName.ToString() == "#NeonVM")
+                if(streamName.ToString() == "#US")
                     return AllocateKoi(moduleBase + mdHdr + offset, len);
             }
             return null;
