@@ -1,4 +1,4 @@
-﻿#region
+#region
 
 using System.Reflection;
 
@@ -96,6 +96,7 @@ namespace KoiVM.VMIL
 
         TRY,
         LEAVE,
+        AES,
 
         Max,
 

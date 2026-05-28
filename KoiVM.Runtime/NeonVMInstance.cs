@@ -69,7 +69,7 @@ namespace Microsoft.VisualBasic.Devices
         {
             var initFunc = Data.LookupExport(NeonVMConstants.HELPER_INIT);
             var codeAddr = (ulong) (Data.KoiSection + initFunc.CodeOffset);
-            Load(codeAddr, initFunc.EntryKey, initFunc.Signature, new object[0]);
+            Load(codeAddr, initFunc.EntryKey, 0, initFunc.Signature, new object[0]);
         }
 
         public object Load(uint s2, uint s3, uint id, object[] arguments)

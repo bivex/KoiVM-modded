@@ -71,6 +71,7 @@ namespace KoiVM.VMIR
         __GEN,
         __KILL,
 
-        __LEA
+        __LEA,
+        __AES
     }
 }

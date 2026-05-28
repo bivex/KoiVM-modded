@@ -50,11 +50,11 @@ namespace System.Runtime.Serialization.Formatters.Execution
                     true);
 
                 var il = dm.GetILGenerator();
-                il.Emit(OpCodes.Ldarg_0); // target (this)
-                il.Emit(OpCodes.Ldarg_1); // ctx
-                il.Emit(OpCodes.Ldarg_2); // out state
-                il.Emit(OpCodes.Callvirt, method);
-                il.Emit(OpCodes.Ret);
+                il.Emit(System.Reflection.Emit.OpCodes.Ldarg_0); // target (this)
+                il.Emit(System.Reflection.Emit.OpCodes.Ldarg_1); // ctx
+                il.Emit(System.Reflection.Emit.OpCodes.Ldarg_2); // out state
+                il.Emit(System.Reflection.Emit.OpCodes.Callvirt, method);
+                il.Emit(System.Reflection.Emit.OpCodes.Ret);
 
                 return (OpCodeHandler)dm.CreateDelegate(typeof(OpCodeHandler), target);
             }
@@ -68,10 +68,10 @@ namespace System.Runtime.Serialization.Formatters.Execution
                     true);
 
                 var il = dm.GetILGenerator();
-                il.Emit(OpCodes.Ldarg_0); // ctx
-                il.Emit(OpCodes.Ldarg_1); // out state
-                il.Emit(OpCodes.Call, method);
-                il.Emit(OpCodes.Ret);
+                il.Emit(System.Reflection.Emit.OpCodes.Ldarg_0); // ctx
+                il.Emit(System.Reflection.Emit.OpCodes.Ldarg_1); // out state
+                il.Emit(System.Reflection.Emit.OpCodes.Call, method);
+                il.Emit(System.Reflection.Emit.OpCodes.Ret);
 
                 return (OpCodeHandler)dm.CreateDelegate(typeof(OpCodeHandler));
             }

@@ -22,6 +22,7 @@ namespace System.Runtime.Serialization.Formatters.Data
             else
             {
                 EntryKey = 0;
+                OpCodeSeed = 0;
             }
             Signature = new NeonVMFuncSig(ref ptr, module);
         }

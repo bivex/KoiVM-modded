@@ -48,96 +48,28 @@ namespace KoiVM.Protections.SMC
             var sentinelDwCount = 0x0f000006;
             var sentinelAdrKey = 0x0f000007;
 
-            // entryStub: derive key from block offset + method seeds
+            // entryStub: derive key and call AES
             entryStub.Content.AddRange(new[]
             {
-                // key = blockOffset ^ methodSeed1
-                new IRInstruction(IROpCode.MOV, key, IRConstant.FromI4(sentinelBlkOff), SMCBlock.BlockOffset),
-                new IRInstruction(IROpCode.__XOR, key, IRConstant.FromI4(sentinelMs1), SMCBlock.MethodSeed1),
+                // K1 = blockOffset ^ methodSeed1
+                new IRInstruction(IROpCode.MOV, IRRegister.K1, IRConstant.FromI4(sentinelBlkOff), SMCBlock.BlockOffset),
+                new IRInstruction(IROpCode.__XOR, IRRegister.K1, IRConstant.FromI4(sentinelMs1), SMCBlock.MethodSeed1),
 
-                // Diffusion round 1: key = key * 0x6C078965 + 1
-                new IRInstruction(IROpCode.MOV, temp, key),
-                new IRInstruction(IROpCode.MUL, temp, IRConstant.FromI4(0x6C078965)),
-                new IRInstruction(IROpCode.ADD, temp, IRConstant.FromI4(0x01)),
-                new IRInstruction(IROpCode.MOV, key, temp),
+                // K2 = methodSeed2
+                new IRInstruction(IROpCode.MOV, IRRegister.K2, IRConstant.FromI4(sentinelMs2), SMCBlock.MethodSeed2),
 
-                // key ^= methodSeed2
-                new IRInstruction(IROpCode.__XOR, key, IRConstant.FromI4(sentinelMs2), SMCBlock.MethodSeed2),
-
-                // Diffusion round 2: key = key * 0x6C078965 + 1
-                new IRInstruction(IROpCode.MOV, temp, key),
-                new IRInstruction(IROpCode.MUL, temp, IRConstant.FromI4(0x6C078965)),
-                new IRInstruction(IROpCode.ADD, temp, IRConstant.FromI4(0x01)),
-                new IRInstruction(IROpCode.MOV, key, temp),
-
-                // key ^= methodSeed1
-                new IRInstruction(IROpCode.__XOR, key, IRConstant.FromI4(sentinelMs1), SMCBlock.MethodSeed1),
-
-                // Diffusion round 3: key = key * 0x6C078965 + 1
-                new IRInstruction(IROpCode.MOV, temp, key),
-                new IRInstruction(IROpCode.MUL, temp, IRConstant.FromI4(0x6C078965)),
-                new IRInstruction(IROpCode.ADD, temp, IRConstant.FromI4(0x01)),
-                new IRInstruction(IROpCode.MOV, key, temp),
-
-                // key ^= methodSeed2
-                new IRInstruction(IROpCode.__XOR, key, IRConstant.FromI4(sentinelMs2), SMCBlock.MethodSeed2),
-
-                // Diffusion round 4: key = key * 0x6C078965 + 1
-                new IRInstruction(IROpCode.MOV, temp, key),
-                new IRInstruction(IROpCode.MUL, temp, IRConstant.FromI4(0x6C078965)),
-                new IRInstruction(IROpCode.ADD, temp, IRConstant.FromI4(0x01)),
-                new IRInstruction(IROpCode.MOV, key, temp),
-
-                // counter = dwordCount
-                new IRInstruction(IROpCode.MOV, counter, IRConstant.FromI4(sentinelDwCount), SMCBlock.DwordCount),
-
-                // pointer = &trampoline (points to start of encrypted block)
+                // pointer = &trampoline
                 new IRInstruction(IROpCode.MOV, pointer, new IRBlockTarget(trampoline)),
 
-                // CMP counter, 0 => skip loop
-                new IRInstruction(IROpCode.CMP, counter, IRConstant.FromI4(0)),
-                new IRInstruction(IROpCode.__GETF, temp, IRConstant.FromI4(1 << tr.VM.Architecture.Flags.ZERO)),
-                new IRInstruction(IROpCode.JZ, new IRBlockTarget(trampoline), temp),
+                // counter = byteCount
+                new IRInstruction(IROpCode.MOV, counter, IRConstant.FromI4(sentinelDwCount), SMCBlock.DwordCount),
 
-                new IRInstruction(IROpCode.JMP, new IRBlockTarget(dwordLoop))
-            });
-            entryStub.LinkTo(dwordLoop);
-            entryStub.LinkTo(trampoline);
+                // AES(pointer, counter)
+                new IRInstruction(IROpCode.__AES, pointer, counter),
 
-            // dwordLoop: decrypt DWORD at pointer, advance pointer, loop
-            dwordLoop.Content.AddRange(new[]
-            {
-                // Load DWORD from pointer
-                new IRInstruction(IROpCode.__LDOBJ, pointer, dwordVal, new PointerInfo("LDOBJ", int32Type)),
-
-                // XOR with current key
-                new IRInstruction(IROpCode.__XOR, dwordVal, key),
-
-                // Store DWORD back
-                new IRInstruction(IROpCode.__STOBJ, pointer, dwordVal, new PointerInfo("STOBJ", int32Type)),
-
-                // Evolve key: key = key * lcgMult + lcgAdd
-                new IRInstruction(IROpCode.MOV, temp, key),
-                new IRInstruction(IROpCode.MUL, temp, IRConstant.FromI4(sentinelLm), SMCBlock.LcgMult),
-                new IRInstruction(IROpCode.ADD, temp, IRConstant.FromI4(sentinelLa), SMCBlock.LcgAdd),
-                new IRInstruction(IROpCode.MOV, key, temp),
-
-                // Advance pointer by 4
-                new IRInstruction(IROpCode.ADD, pointer, IRConstant.FromI4(4)),
-
-                // Decrement counter
-                new IRInstruction(IROpCode.ADD, counter, IRConstant.FromI4(-1)),
-
-                // Loop check
-                new IRInstruction(IROpCode.CMP, counter, IRConstant.FromI4(0)),
-                new IRInstruction(IROpCode.__GETF, dwordVal, IRConstant.FromI4(1 << tr.VM.Architecture.Flags.ZERO)),
-                new IRInstruction(IROpCode.JNZ, new IRBlockTarget(dwordLoop), dwordVal),
-
-                // Fall through to trampoline
                 new IRInstruction(IROpCode.JMP, new IRBlockTarget(trampoline))
             });
-            dwordLoop.LinkTo(dwordLoop);
-            dwordLoop.LinkTo(trampoline);
+            entryStub.LinkTo(trampoline);
 
             // trampoline: de-obfuscate entry address and jump
             trampoline.Content.AddRange(new[]
@@ -152,14 +84,13 @@ namespace KoiVM.Protections.SMC
 
             var scope = tr.RootScope.SearchBlock(entry).Last();
             scope.Content.Insert(0, entryStub);
-            scope.Content.Insert(1, dwordLoop);
-            scope.Content.Insert(2, trampoline);
+            scope.Content.Insert(1, trampoline);
         }
 
         public void Transform(IRTransformer tr)
         {
             if(doWork)
-                tr.Block.Id += 4;
+                tr.Block.Id += 2;
         }
     }
 }

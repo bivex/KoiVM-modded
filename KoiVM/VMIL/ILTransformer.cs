@@ -1,4 +1,4 @@
-﻿#region
+#region
 
 using System;
 using System.Collections.Generic;
@@ -8,6 +8,7 @@ using KoiVM.CFG;
 using KoiVM.RT;
 using KoiVM.VM;
 using KoiVM.VMIL.Transforms;
+using KoiVM.Protections.SMC;
 
 #endregion
 

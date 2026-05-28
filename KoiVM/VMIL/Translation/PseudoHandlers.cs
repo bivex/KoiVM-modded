@@ -90,4 +90,16 @@ namespace KoiVM.VMIL.Translation
             tr.Instructions.Add(new ILInstruction(TranslationHelpers.GetSIND(instr.Operand2.Type, rawType)));
         }
     }
+
+    public class AesHandler : ITranslationHandler
+    {
+        public IROpCode IRCode => IROpCode.__AES;
+
+        public void Translate(IRInstruction instr, ILTranslator tr)
+        {
+            tr.PushOperand(instr.Operand1);
+            tr.PushOperand(instr.Operand2);
+            tr.Instructions.Add(new ILInstruction(ILOpCode.AES));
+        }
+    }
 }

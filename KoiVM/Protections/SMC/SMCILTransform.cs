@@ -31,8 +31,6 @@ namespace KoiVM.Protections.SMC
 
             adrKey = tr.VM.Random.Next();
 
-            newTrampoline.LcgMultValue = (uint) (tr.VM.Random.Next() | 1);
-            newTrampoline.LcgAddValue = (uint) tr.VM.Random.Next();
             newTrampoline.MethodSeed1Value = (uint) tr.VM.Random.Next();
             newTrampoline.MethodSeed2Value = (uint) tr.VM.Random.Next();
         }
@@ -81,16 +79,6 @@ namespace KoiVM.Protections.SMC
             {
                 var imm = (ILImmediate) instr.Operand;
                 if((int) imm.Value == 0x0f000003) imm.Value = (int) newTrampoline.MethodSeed2Value;
-            }
-            else if(instr.IR.Annotation == SMCBlock.LcgMult && instr.OpCode == ILOpCode.PUSHI_DWORD)
-            {
-                var imm = (ILImmediate) instr.Operand;
-                if((int) imm.Value == 0x0f000004) imm.Value = (int) newTrampoline.LcgMultValue;
-            }
-            else if(instr.IR.Annotation == SMCBlock.LcgAdd && instr.OpCode == ILOpCode.PUSHI_DWORD)
-            {
-                var imm = (ILImmediate) instr.Operand;
-                if((int) imm.Value == 0x0f000005) imm.Value = (int) newTrampoline.LcgAddValue;
             }
             else if(instr.IR.Annotation == SMCBlock.DwordCount && instr.OpCode == ILOpCode.PUSHI_DWORD)
             {

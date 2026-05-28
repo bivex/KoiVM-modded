@@ -2,6 +2,7 @@
 
 using System;
 using System.IO;
+using dnlib.DotNet;
 using dnlib.DotNet.Pdb;
 using KoiVM.AST.IL;
 using KoiVM.AST.ILAST;

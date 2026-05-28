@@ -1,6 +1,8 @@
 #region
 
 using System;
+using System.IO;
+using System.Security.Cryptography;
 using dnlib.DotNet;
 using KoiVM.AST;
 using KoiVM.AST.IL;
@@ -26,13 +28,10 @@ namespace KoiVM.Protections.SMC
         {
         }
 
-        public uint LcgMultValue { get; set; }
-        public uint LcgAddValue { get; set; }
         public uint MethodSeed1Value { get; set; }
         public uint MethodSeed2Value { get; set; }
-
-        public ILImmediate DwordCountOperand { get; set; }
         public ILImmediate BlockOffsetOperand { get; set; }
+        public ILImmediate DwordCountOperand { get; set; }
 
         public override IKoiChunk CreateChunk(NeonVMRuntime rt, MethodDef method)
         {
@@ -58,8 +57,8 @@ namespace KoiVM.Protections.SMC
 
             block.BlockOffsetOperand.Value = (int) offset;
             int paddedLen = (int) base.Length;
-            paddedLen = (paddedLen + 3) & ~3;
-            block.DwordCountOperand.Value = paddedLen / 4;
+            paddedLen = (paddedLen + 15) & ~15;
+            block.DwordCountOperand.Value = paddedLen;
 
             base.OnOffsetComputed(offset);
         }
@@ -69,28 +68,33 @@ namespace KoiVM.Protections.SMC
             var data = GetData();
             var block = (SMCBlock) Block;
 
-            uint initKey = DeriveKey(block.MethodSeed1Value, block.MethodSeed2Value, blockOffset);
-
-            int paddedLen = (data.Length + 3) & ~3;
+            int paddedLen = (data.Length + 15) & ~15;
             var padded = new byte[paddedLen];
             Array.Copy(data, padded, data.Length);
 
-            uint key = initKey;
-            int dwordCount = paddedLen / 4;
-            for(var i = 0; i < dwordCount; i++)
-            {
-                uint dword = (uint) (padded[i * 4] | (padded[i * 4 + 1] << 8) |
-                                     (padded[i * 4 + 2] << 16) | (padded[i * 4 + 3] << 24));
-                dword ^= key;
-                padded[i * 4] = (byte) dword;
-                padded[i * 4 + 1] = (byte) (dword >> 8);
-                padded[i * 4 + 2] = (byte) (dword >> 16);
-                padded[i * 4 + 3] = (byte) (dword >> 24);
+            uint seed = block.MethodSeed1Value ^ blockOffset;
+            byte[] key = new byte[16];
+            for (int i = 0; i < 16; i++) key[i] = Entropy.DeriveByte((int)seed, (uint)i, "SMC_AES_KEY");
 
-                key = key * block.LcgMultValue + block.LcgAddValue;
+            byte[] iv = new byte[16];
+            for (int i = 0; i < 8; i++)
+            {
+                iv[i] = (byte)(blockOffset >> (i * 8));
+                iv[i + 8] = (byte)(blockOffset >> (i * 8));
             }
 
-            return padded;
+            using (var aes = Aes.Create())
+            {
+                aes.Key = key;
+                aes.IV = iv;
+                aes.Mode = CipherMode.CBC;
+                aes.Padding = PaddingMode.None;
+
+                using (var encryptor = aes.CreateEncryptor())
+                {
+                    return encryptor.TransformFinalBlock(padded, 0, paddedLen);
+                }
+            }
         }
 
         static uint DeriveKey(uint seed1, uint seed2, uint offset)

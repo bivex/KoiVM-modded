@@ -100,6 +100,7 @@ namespace System.Runtime.Serialization.Formatters.Dynamic
         public static byte OP_VCALL;
         public static byte OP_TRY;
         public static byte OP_LEAVE;
+        public static byte OP_AES;
 
         public static byte VCALL_EXIT;
         public static byte VCALL_BREAK;
