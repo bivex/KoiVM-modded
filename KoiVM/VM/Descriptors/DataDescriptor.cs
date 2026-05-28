@@ -87,7 +87,8 @@ namespace KoiVM.VM
         public NeonVMMethodInfo LookupInfo(MethodDef method)
         {
             NeonVMMethodInfo ret;
-            if(!methodInfos.TryGetValue(method, out ret))
+            bool cached = methodInfos.TryGetValue(method, out ret);
+            if(!cached)
             {
                 var seed = random.Next();
                 uint entryRolling = Entropy.DeriveByte(seed, (uint)method.Rid, "method_entry");
@@ -105,6 +106,14 @@ namespace KoiVM.VM
                     OpCodeSeed = (byte)random.Next()
                 };
                 methodInfos[method] = ret;
+                Console.WriteLine("[LOOKUP-NEW] method=" + method.Name + " rid=" + method.Rid +
+                    " EntryKey=0x" + ret.EntryKey.ToString("x8") + " OpCodeSeed=" + ret.OpCodeSeed +
+                    " seed=" + seed);
+            }
+            else if(method.Name == "INIT")
+            {
+                Console.WriteLine("[LOOKUP-CACHED-INIT] EntryKey=0x" + ret.EntryKey.ToString("x8") +
+                    " OpCodeSeed=" + ret.OpCodeSeed);
             }
             return ret;
         }

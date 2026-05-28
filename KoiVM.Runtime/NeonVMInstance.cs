@@ -71,14 +71,15 @@ namespace Microsoft.VisualBasic.Devices
             var codeAddr = (ulong) (Data.KoiSection + initFunc.CodeOffset);
             Console.WriteLine("[INIT] HELPER_INIT=" + NeonVMConstants.HELPER_INIT +
                 " CodeOffset=" + initFunc.CodeOffset +
-                " EntryKey=0x" + initFunc.EntryKey.ToString("x6") +
+                " EntryKey=0x" + initFunc.EntryKey.ToString("x8") +
                 " OpCodeSeed=" + initFunc.OpCodeSeed);
-            // Dump first 8 raw bytes at codeAddr
+            // Simulate decrypt of first byte
+            uint simKey = initFunc.EntryKey;
             unsafe {
                 byte* p = (byte*)codeAddr;
-                Console.Write("[INIT-RAW] ");
-                for(int i = 0; i < 8; i++) Console.Write(p[i].ToString("x2") + " ");
-                Console.WriteLine();
+                byte enc0 = *p;
+                byte dec0 = (byte)(enc0 ^ (byte)simKey);
+                Console.WriteLine("[INIT-DECRYPT] enc[0]=0x" + enc0.ToString("x2") + " key_byte0=0x" + ((byte)simKey).ToString("x2") + " dec[0]=" + dec0);
             }
             Load(codeAddr, initFunc.EntryKey, initFunc.OpCodeSeed, initFunc.Signature, new object[0]);
         }

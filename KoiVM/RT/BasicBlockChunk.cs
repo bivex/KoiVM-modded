@@ -55,6 +55,7 @@ namespace KoiVM.RT
             var blockKey = rt.Descriptor.Data.LookupInfo(method).BlockKeys[Block];
             var currentKey = blockKey.EntryKey;
 
+            System.Console.WriteLine("[ENCRYPT-DBG] EntryKey=0x" + currentKey.ToString("x8") + " raw0=" + data[0] + " method=" + method.Name);
             var firstInstr = Block.Content[0];
             var lastInstr = Block.Content[Block.Content.Count - 1];
             foreach(var instr in Block.Content)
@@ -69,6 +70,10 @@ namespace KoiVM.RT
                     var b = data[instrStart];
                     data[instrStart] ^= (byte)currentKey;
                     currentKey = (currentKey & 0xFFFFFF00) | (byte) ((byte)currentKey * multiplier + b);
+                }
+                // ... rest unchanged - but let me add post-encrypt dump
+                if (instr == firstInstr) {
+                    System.Console.WriteLine("[ENCRYPT-POST] enc[0]=" + data[instrStart].ToString("x2") + " method=" + method.Name);
                 }
 
                 uint? fixupTarget = null;

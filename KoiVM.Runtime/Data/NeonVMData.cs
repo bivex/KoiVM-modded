@@ -46,9 +46,28 @@ namespace System.Runtime.Serialization.Formatters.Data
                 strings[id] = new string((char*) ptr, 0, (int) len);
                 ptr += len << 1;
             }
-            for(var i = 0; i < header->EXP_COUNT; i++) exports[Utils.ReadCompressedUInt(ref ptr)] = new NeonVMExportInfo(ref ptr, module);
+            for(var i = 0; i < header->EXP_COUNT; i++)
+            {
+                var exportId = Utils.ReadCompressedUInt(ref ptr);
+                var codeOffset = *(uint*) ptr;
+                uint packedKey = 0;
+                if(codeOffset != 0) packedKey = *(uint*) (ptr + 4);
+                var export = new NeonVMExportInfo(ref ptr, module);
+                exports[exportId] = export;
+                System.Console.WriteLine("[EXPORT-READ] id=" + exportId + " CodeOffset=" + export.CodeOffset +
+                    " EntryKey=0x" + export.EntryKey.ToString("x8") + " OpCodeSeed=" + export.OpCodeSeed +
+                    " packedKey=0x" + packedKey.ToString("x8"));
+            }
 
             KoiSection = (byte*) data;
+
+            // Verify: dump first HELPER_INIT export bytes
+            foreach(var exp in exports) {
+                if(exp.Value.CodeOffset != 0) {
+                    var p = KoiSection + exp.Value.CodeOffset;
+                    System.Console.WriteLine("[DATA-VERIFY] export=" + exp.Key + " offset=" + exp.Value.CodeOffset + " bytes=" + p[0].ToString("x2") + " " + p[1].ToString("x2") + " " + p[2].ToString("x2") + " " + p[3].ToString("x2"));
+                }
+            }
 
             Module = module;
             moduleVMData[module] = this;

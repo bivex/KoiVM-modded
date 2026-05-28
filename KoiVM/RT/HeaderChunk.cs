@@ -137,6 +137,9 @@ namespace KoiVM.RT
                     var info = rt.Descriptor.Data.LookupInfo(sig.Method);
                     var key = (uint) info.OpCodeSeed << 24;
                     key |= info.EntryKey & 0xffffff;
+                    Console.WriteLine("[HEADER-WRITE] sigId=" + sig.Id + " method=" + (sig.Method?.Name ?? "null") +
+                        " EntryKey=0x" + info.EntryKey.ToString("x8") + " OpCodeSeed=" + info.OpCodeSeed +
+                        " packedKey=0x" + key.ToString("x8") + " offset=" + entryOffset);
                     writer.Write(key);
                 }
                 else
