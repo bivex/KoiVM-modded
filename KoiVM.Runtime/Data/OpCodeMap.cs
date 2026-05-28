@@ -34,6 +34,11 @@ namespace System.Runtime.Serialization.Formatters.Data
                     }
                 }
             Console.WriteLine("[OPCODE-MAP] types=" + typeCount + " assigned=" + assignCount + " unique codes=" + opCodes.Count);
+            var codes = new System.Collections.Generic.List<byte>(opCodes.Keys);
+            codes.Sort();
+            Console.Write("[OPCODE-CODES-RAW]");
+            foreach(var c in codes) Console.Write(" " + c);
+            Console.WriteLine();
         }
 
         public static IOpCode Lookup(byte code)
@@ -69,10 +74,13 @@ namespace System.Runtime.Serialization.Formatters.Data
                 }
             }
             Console.WriteLine("[GETMAP] seed=" + seed + " opCodes.Count=" + opCodes.Count + " mapped=" + mapped);
-            // Verify: check which P_s indices have no mapping
             int nullCount = 0;
             for (int i = 0; i < 256; i++) if (map[i] == null) nullCount++;
             Console.WriteLine("[GETMAP] null slots=" + nullCount + "/256");
+            // Show all mapped positions
+            var positions = new System.Collections.Generic.List<int>();
+            for (int i = 0; i < 256; i++) if (map[i] != null) positions.Add(i);
+            Console.WriteLine("[GETMAP] positions(first30): " + string.Join(",", positions.Take(30)));
             return map;
         }
     }
