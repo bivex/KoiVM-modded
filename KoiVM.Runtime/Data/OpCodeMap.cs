@@ -56,9 +56,6 @@ namespace System.Runtime.Serialization.Formatters.Data
                     mapped++;
                 }
             }
-            var sb = new System.Text.StringBuilder();
-            for(int i = 0; i < 256; i++) if(map[i] != null) sb.Append(i + ",");
-            Console.WriteLine("[GETMAP] seed=" + seed + " mapped=" + mapped + " indices=[" + sb + "]");
             return map;
         }
     }

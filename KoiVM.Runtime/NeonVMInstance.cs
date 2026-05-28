@@ -69,7 +69,17 @@ namespace Microsoft.VisualBasic.Devices
         {
             var initFunc = Data.LookupExport(NeonVMConstants.HELPER_INIT);
             var codeAddr = (ulong) (Data.KoiSection + initFunc.CodeOffset);
-            Console.WriteLine("[INIT] HELPER_INIT=" + NeonVMConstants.HELPER_INIT + " CodeOffset=" + initFunc.CodeOffset + " EntryKey=0x" + initFunc.EntryKey.ToString("x6") + " OpCodeSeed=" + initFunc.OpCodeSeed + " codeAddr=0x" + codeAddr.ToString("x"));
+            Console.WriteLine("[INIT] HELPER_INIT=" + NeonVMConstants.HELPER_INIT +
+                " CodeOffset=" + initFunc.CodeOffset +
+                " EntryKey=0x" + initFunc.EntryKey.ToString("x6") +
+                " OpCodeSeed=" + initFunc.OpCodeSeed);
+            // Dump first 8 raw bytes at codeAddr
+            unsafe {
+                byte* p = (byte*)codeAddr;
+                Console.Write("[INIT-RAW] ");
+                for(int i = 0; i < 8; i++) Console.Write(p[i].ToString("x2") + " ");
+                Console.WriteLine();
+            }
             Load(codeAddr, initFunc.EntryKey, initFunc.OpCodeSeed, initFunc.Signature, new object[0]);
         }
 
@@ -101,11 +111,12 @@ namespace Microsoft.VisualBasic.Devices
             Load(codeAddr, key, export.OpCodeSeed, sig, typedRefs, retTypedRef);
         }
 
-        private object Load(ulong codeAddr, uint key, byte opSeed, NeonVMFuncSig sig, object[] arguments)
+        public object Load(ulong codeAddr, uint key, byte opSeed, NeonVMFuncSig sig, object[] arguments)
         {
             if(currentCtx != null)
                 ctxStack.Push(currentCtx);
             currentCtx = new NeonVMContext(this);
+            Console.WriteLine("[LOAD] opSeed=" + opSeed + " key=0x" + key.ToString("x6") + " args=" + arguments.Length);
             currentCtx.OpCodeMap = OpCodeRelocator.Relocate(OpCodeMap.GetMap(opSeed));
 
             try
