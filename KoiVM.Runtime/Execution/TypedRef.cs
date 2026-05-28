@@ -26,7 +26,7 @@ namespace System.Runtime.Serialization.Formatters.Execution
 
         public NeonVMSlot GetValue(NeonVMContext ctx, PointerType type)
         {
-            TypedReference typedRef;
+            TypedReference typedRef = default(TypedReference);
             if(_ptr != null)
                 *&typedRef = *(TypedReference*) _ptr.Value;
             else
@@ -36,7 +36,7 @@ namespace System.Runtime.Serialization.Formatters.Execution
 
         public void SetValue(NeonVMContext ctx, NeonVMSlot slot, PointerType type)
         {
-            TypedReference typedRef;
+            TypedReference typedRef = default(TypedReference);
             if(_ptr != null)
                 *&typedRef = *(TypedReference*) _ptr.Value;
             else
@@ -64,6 +64,7 @@ namespace System.Runtime.Serialization.Formatters.Execution
             else
                 *(PseudoTypedRef*) typedRef = _typedRef;
         }
+
 
         // TODO: compat with mono?
         [StructLayout(LayoutKind.Sequential)]

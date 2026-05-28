@@ -268,13 +268,12 @@ namespace System.Runtime.Serialization.Formatters.Data
             return null;
         }
 
-        [DllImport("kernel32.dll")]
-        private static extern void CopyMemory(void* dest, void* src, uint count);
-
         private static void* AllocateKoi(void* ptr, uint len)
         {
             var koi = (void*) Marshal.AllocHGlobal((int) len);
-            CopyMemory(koi, ptr, len);
+            var src = new byte[len];
+            Marshal.Copy((IntPtr) ptr, src, 0, (int) len);
+            Marshal.Copy(src, 0, (IntPtr) koi, (int) len);
             return koi;
         }
 

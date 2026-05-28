@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using dnlib.DotNet;
-using Microsoft.VisualBasic;
 
 #endregion
 

@@ -8,6 +8,7 @@ using KoiVM.RT;
 using KoiVM.VM;
 using KoiVM.VMIR.Transforms;
 using KoiVM.Protections.OpaquePredicate;
+using KoiVM.Protections.SMC;
 
 #endregion
 
