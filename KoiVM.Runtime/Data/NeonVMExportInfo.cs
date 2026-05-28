@@ -14,7 +14,9 @@ namespace System.Runtime.Serialization.Formatters.Data
             ptr += 4;
             if(CodeOffset != 0)
             {
-                EntryKey = *(uint*) ptr;
+                var key = *(uint*) ptr;
+                EntryKey = key & 0xffffff;
+                OpCodeSeed = (byte) (key >> 24);
                 ptr += 4;
             }
             else
@@ -26,6 +28,7 @@ namespace System.Runtime.Serialization.Formatters.Data
 
         public readonly uint CodeOffset;
         public readonly uint EntryKey;
+        public readonly byte OpCodeSeed;
         public readonly NeonVMFuncSig Signature;
     }
 }

@@ -76,33 +76,34 @@ namespace Microsoft.VisualBasic.Devices
         {
             var export = Data.LookupExport(id / 5 / 63493);
             var codeAddr = (ulong) (Data.KoiSection + export.CodeOffset);
-            return Load(codeAddr, export.EntryKey, export.Signature, arguments);
+            return Load(codeAddr, export.EntryKey, export.OpCodeSeed, export.Signature, arguments);
         }
 
         public object Load(ulong codeAddr, uint key, uint sigId, object[] arguments)
         {
             var sig = Data.LookupExport(sigId).Signature;
-            return Load(codeAddr, key, sig, arguments);
+            return Load(codeAddr, key, 0, sig, arguments); // sigId doesn't have seed
         }
 
         public void Load(uint s2, uint s3, uint id, void*[] typedRefs, void* retTypedRef)
         {
             var export = Data.LookupExport(id / 5 / 63493);
             var codeAddr = (ulong) (Data.KoiSection + export.CodeOffset);
-            Load(codeAddr, export.EntryKey, export.Signature, typedRefs, retTypedRef);
+            Load(codeAddr, export.EntryKey, export.OpCodeSeed, export.Signature, typedRefs, retTypedRef);
         }
 
         public void Load(ulong codeAddr, uint key, uint sigId, void*[] typedRefs, void* retTypedRef)
         {
             var sig = Data.LookupExport(sigId).Signature;
-            Load(codeAddr, key, sig, typedRefs, retTypedRef);
+            Load(codeAddr, key, 0, sig, typedRefs, retTypedRef);
         }
 
-        private object Load(ulong codeAddr, uint key, NeonVMFuncSig sig, object[] arguments)
+        private object Load(ulong codeAddr, uint key, byte opSeed, NeonVMFuncSig sig, object[] arguments)
         {
             if(currentCtx != null)
                 ctxStack.Push(currentCtx);
             currentCtx = new NeonVMContext(this);
+            currentCtx.OpCodeMap = OpCodeMap.GetMap(opSeed);
 
             try
             {
@@ -139,11 +140,12 @@ namespace Microsoft.VisualBasic.Devices
             }
         }
 
-        private void Load(ulong codeAddr, uint key, NeonVMFuncSig sig, void*[] arguments, void* retTypedRef)
+        private void Load(ulong codeAddr, uint key, byte opSeed, NeonVMFuncSig sig, void*[] arguments, void* retTypedRef)
         {
             if(currentCtx != null)
                 ctxStack.Push(currentCtx);
             currentCtx = new NeonVMContext(this);
+            currentCtx.OpCodeMap = OpCodeMap.GetMap(opSeed);
 
             try
             {

@@ -134,8 +134,9 @@ namespace KoiVM.RT
                     Debug.Assert(entryOffset != 0);
                     writer.Write(entryOffset);
 
-                    var key = (uint) rt.Descriptor.Random.Next();
-                    key = (key << 8) | rt.Descriptor.Data.LookupInfo(sig.Method).EntryKey;
+                    var info = rt.Descriptor.Data.LookupInfo(sig.Method);
+                    var key = (uint) info.OpCodeSeed << 24;
+                    key |= info.EntryKey & 0xffffff;
                     writer.Write(key);
                 }
                 else

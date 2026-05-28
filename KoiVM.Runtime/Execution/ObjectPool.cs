@@ -82,7 +82,7 @@ namespace System.Runtime.Serialization.Formatters.Execution
             {
                 var op = ctx.ReadByte();
                 var p = ctx.ReadByte(); // For key fixup
-                OpCodeMap.Lookup(op).Load(ctx, out state);
+                ctx.OpCodeMap[op].Load(ctx, out state);
 
                 if(ctx.Registers[NeonVMConstants.REG_IP].U8 == 1)
                     state = ExecutionState.Exit;

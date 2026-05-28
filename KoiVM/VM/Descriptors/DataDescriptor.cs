@@ -101,7 +101,8 @@ namespace KoiVM.VM
                 ret = new NeonVMMethodInfo
                 {
                     EntryKey = entryRolling | (entryMult << 8) | (entryInv << 16),
-                    ExitKey = exitRolling | (exitMult << 8) | (exitInv << 16)
+                    ExitKey = exitRolling | (exitMult << 8) | (exitInv << 16),
+                    OpCodeSeed = (byte)random.Next()
                 };
                 methodInfos[method] = ret;
             }

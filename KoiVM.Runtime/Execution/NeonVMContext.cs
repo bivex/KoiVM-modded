@@ -14,6 +14,7 @@ namespace System.Runtime.Serialization.Formatters.Execution
         public readonly List<EHFrame> EHStack = new List<EHFrame>();
         public readonly List<EHState> EHStates = new List<EHState>();
         public readonly NeonVMInstance Instance;
+        public IOpCode[] OpCodeMap;
 
         public readonly NeonVMSlot[] Registers = new NeonVMSlot[16];
         public readonly NeonVMStack Stack = new NeonVMStack();

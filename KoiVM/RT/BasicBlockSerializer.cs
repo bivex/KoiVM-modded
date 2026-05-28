@@ -94,8 +94,10 @@ namespace KoiVM.RT
             return a.Document.Url == b.Document.Url && a.StartLine == b.StartLine;
         }
 
-        public void WriteData(ILBlock block, BinaryWriter writer)
+        public void WriteData(MethodDef method, ILBlock block, BinaryWriter writer)
         {
+            var info = rt.Descriptor.Data.LookupInfo(method);
+            var mapping = rt.Descriptor.Architecture.OpCodes.GetMapping(info.OpCodeSeed);
             uint offset = 0;
             SequencePoint prevSeq = null;
             uint prevOffset = 0;
@@ -120,7 +122,7 @@ namespace KoiVM.RT
                     }
                 }
 
-                writer.Write(rt.Descriptor.Architecture.OpCodes[instr.OpCode]);
+                writer.Write(mapping[(int) instr.OpCode]);
                 // Leave a padding to let BasicBlockChunk fixup block exit key
                 writer.Write((byte) rt.Descriptor.Random.Next());
                 offset += 2;

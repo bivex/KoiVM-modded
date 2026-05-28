@@ -18,5 +18,19 @@ namespace KoiVM.VM
         }
 
         public byte this[ILOpCode opCode] => opCodeOrder[(int) opCode];
+
+        public byte[] GetMapping(byte seed)
+        {
+            var mapping = (byte[]) opCodeOrder.Clone();
+            var random = new Random(seed);
+            for (int i = 0; i < 256; i++)
+            {
+                int j = random.Next(256);
+                byte temp = mapping[i];
+                mapping[i] = mapping[j];
+                mapping[j] = temp;
+            }
+            return mapping;
+        }
     }
 }

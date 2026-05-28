@@ -13,6 +13,7 @@ namespace KoiVM.VM
         public readonly HashSet<NeonVMRegisters> UsedRegister;
         public uint EntryKey;
         public uint ExitKey;
+        public byte OpCodeSeed;
 
         public ScopeBlock RootScope;
 

@@ -46,7 +46,7 @@ namespace KoiVM.RT
         public byte[] GetData()
         {
             var stream = new MemoryStream();
-            rt.serializer.WriteData(Block, new BinaryWriter(stream));
+            rt.serializer.WriteData(method, Block, new BinaryWriter(stream));
             return Encrypt(stream.ToArray());
         }
 
