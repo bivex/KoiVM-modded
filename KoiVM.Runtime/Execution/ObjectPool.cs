@@ -96,7 +96,15 @@ namespace System.Runtime.Serialization.Formatters.Execution
                         " counter=" + counter + ")");
                 }
                 if (counter < 50) Console.WriteLine("[VM] #" + counter + " op=" + op + " p=" + p + " K1=0x" + k1Before.ToString("x8"));
-                handler(ctx, out state);
+                try
+                {
+                    handler(ctx, out state);
+                }
+                catch (NullReferenceException nre)
+                {
+                    Console.WriteLine("[CRASH-NRE] #" + counter + " op=" + op + " p=" + p + " K1=0x" + k1Before.ToString("x8") + " IP=0x" + ctx.Registers[NeonVMConstants.REG_IP].U8.ToString("x") + " msg=" + nre.Message);
+                    throw;
+                }
 
                 if (++counter % 10 == 0) OpCodeRelocator.RollingRelocate(ctx.OpCodeMap);
 

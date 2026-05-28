@@ -99,11 +99,18 @@ namespace KoiVM.RT
         {
             var info = rt.Descriptor.Data.LookupInfo(method);
             var mapping = rt.Descriptor.Architecture.OpCodes.GetMapping(info.OpCodeSeed);
+            long streamStart = writer.BaseStream.Position;
+            long cumPredicted = 0;
             uint offset = 0;
             SequencePoint prevSeq = null;
             uint prevOffset = 0;
+            int instrIdx = 0;
             foreach(var instr in block.Content)
             {
+                long streamBeforeInstr = writer.BaseStream.Position;
+                uint predictedLen = ComputeLength(instr);
+                uint startOffset = offset;
+                long cumBefore = streamBeforeInstr - streamStart;
                 if(rt.dbgWriter != null && instr.IR.ILAST is ILASTExpression)
                 {
                     var expr = (ILASTExpression) instr.IR.ILAST;
@@ -172,6 +179,40 @@ namespace KoiVM.RT
                     {
                         throw new NotSupportedException();
                     }
+                long afterOperand = writer.BaseStream.Position;
+                uint actualLen = offset - startOffset;
+                long streamLen = afterOperand - streamBeforeInstr;
+                if(streamLen != actualLen)
+                {
+                    Console.WriteLine("[STREAM-VS-OFFSET] blockId=" + block.Id +
+                        " instr[" + instrIdx + "] op=" + instr.OpCode +
+                        " streamLen=" + streamLen + " offsetLen=" + actualLen +
+                        " diff=" + (streamLen - actualLen) +
+                        " operand=" + (instr.Operand != null ? instr.Operand.GetType().FullName : "null") +
+                        " operandValue=" + (instr.Operand is ILImmediate ? ((ILImmediate)instr.Operand).Value.GetType().FullName + ":" + ((ILImmediate)instr.Operand).Value : "N/A"));
+                }
+                cumPredicted += predictedLen;
+                long cumActual = writer.BaseStream.Position - streamStart;
+                if(actualLen != predictedLen || streamLen != predictedLen || cumActual != cumPredicted)
+                {
+                    Console.WriteLine("[SERIALIZE-MISMATCH] blockId=" + block.Id +
+                        " instr[" + instrIdx + "] op=" + instr.OpCode +
+                        " operand=" + (instr.Operand != null ? instr.Operand.GetType().FullName : "null") +
+                        " operandValue=" + (instr.Operand is ILImmediate ? ((ILImmediate)instr.Operand).Value : (object)"N/A") +
+                        " operandValueType=" + (instr.Operand is ILImmediate ? ((ILImmediate)instr.Operand).Value.GetType().FullName : "N/A") +
+                        " predicted=" + predictedLen + " actual=" + actualLen + " streamLen=" + streamLen +
+                        " cumPredicted=" + cumPredicted + " cumActual=" + cumActual);
+                }
+                instrIdx++;
+            }
+
+            long streamTotal = writer.BaseStream.Position - streamStart;
+            uint predictedTotal = ComputeLength(block);
+            if(streamTotal != predictedTotal)
+            {
+                Console.WriteLine("[WRITE-TOTAL-MISMATCH] blockId=" + block.Id +
+                    " predictedTotal=" + predictedTotal + " streamTotal=" + streamTotal +
+                    " diff=" + (streamTotal - predictedTotal));
             }
 
             if(prevSeq != null)

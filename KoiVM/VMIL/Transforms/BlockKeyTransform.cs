@@ -104,6 +104,12 @@ namespace KoiVM.VMIL.Transforms
             } while(updated);
 
             // Replace id with actual values
+            // All blocks across ALL methods share the same multiplier/inverse multiplier
+            // so JMP/CALL/RET fixup bytes (which only adjust byte 0) can correctly transition keys.
+            byte sharedMult = runtime.Descriptor.Data.globalMult;
+            byte sharedInv = runtime.Descriptor.Data.globalInv;
+            Console.WriteLine("[BLOCKKEY-REPLACE] EntryKey=0x" + methodInfo.EntryKey.ToString("x8") + " sharedMult=0x" + sharedMult.ToString("x2") + " sharedInv=0x" + sharedInv.ToString("x2"));
+
             var idMap = new Dictionary<uint, uint>();
             idMap[0xffffffff] = 0;
             idMap[0xfffffffe] = methodInfo.EntryKey;
@@ -116,18 +122,19 @@ namespace KoiVM.VMIL.Transforms
                 if(!idMap.TryGetValue(entryId, out key.Entry))
                 {
                     uint rolling = Entropy.DeriveByte(runtime.Descriptor.Settings.Seed, entryId, "block_entry");
-                    uint mult = Entropy.DeriveByte(runtime.Descriptor.Settings.Seed, entryId, "block_entry_mult") | 1u;
-                    uint inv = Entropy.ModInverse((byte)mult);
-                    key.Entry = idMap[entryId] = rolling | (mult << 8) | (inv << 16);
+                    key.Entry = idMap[entryId] = rolling | ((uint)sharedMult << 8) | ((uint)sharedInv << 16);
+                    Console.WriteLine("[BLOCKKEY-NEW] blockId=" + block.Id + " entryId=" + entryId + " rolling=0x" + rolling.ToString("x2") + " mult=0x" + sharedMult.ToString("x2") + " result=0x" + key.Entry.ToString("x8"));
+                }
+                else
+                {
+                    Console.WriteLine("[BLOCKKEY-CACHED] blockId=" + block.Id + " entryId=" + entryId + " cached=0x" + key.Entry.ToString("x8"));
                 }
 
                 var exitId = key.Exit;
                 if(!idMap.TryGetValue(exitId, out key.Exit))
                 {
                     uint rolling = Entropy.DeriveByte(runtime.Descriptor.Settings.Seed, exitId, "block_exit");
-                    uint mult = Entropy.DeriveByte(runtime.Descriptor.Settings.Seed, exitId, "block_exit_mult") | 1u;
-                    uint inv = Entropy.ModInverse((byte)mult);
-                    key.Exit = idMap[exitId] = rolling | (mult << 8) | (inv << 16);
+                    key.Exit = idMap[exitId] = rolling | ((uint)sharedMult << 8) | ((uint)sharedInv << 16);
                 }
 
                 Keys[block] = key;

@@ -205,24 +205,49 @@ namespace KoiVM.RT
 
             var heap = new KoiHeap();
             uint runningOffset = 0;
+            uint predictedOffset = 0;
             foreach(var chunk in finalChunks)
             {
                 var data = chunk.GetData();
                 var offset = heap.AddChunk(data);
                 var bbChunk = chunk as BasicBlockChunk;
+                int sizeMismatch = data.Length - (int)chunk.Length;
                 if(bbChunk != null)
                 {
                     var first4 = data.Length >= 4 ?
                         data[0].ToString("x2") + " " + data[1].ToString("x2") + " " + data[2].ToString("x2") + " " + data[3].ToString("x2") :
                         data[0].ToString("x2");
-                    Console.WriteLine("[HEAP-CHUNK] offset=" + offset + " len=" + data.Length +
+                    Console.WriteLine("[HEAP-CHUNK] offset=" + offset + " predicted=" + predictedOffset +
+                        " len=" + data.Length + " predictedLen=" + chunk.Length +
+                        " mismatch=" + sizeMismatch + " drift=" + (offset - predictedOffset) +
                         " blockId=" + bbChunk.Block.Id + " Content0Offset=" + bbChunk.Block.Content[0].Offset +
                         " first4=" + first4);
+                    if(sizeMismatch != 0)
+                    {
+                        Console.WriteLine("[SIZE-MISMATCH] blockId=" + bbChunk.Block.Id +
+                            " predicted=" + chunk.Length + " actual=" + data.Length +
+                            " diff=" + sizeMismatch);
+                        uint predLen = 0;
+                        uint actLen = 0;
+                        for(int ii = 0; ii < bbChunk.Block.Content.Count; ii++)
+                        {
+                            var instr2 = bbChunk.Block.Content[ii];
+                            var instrLen = serializer.ComputeLength(instr2);
+                            predLen += instrLen;
+                            Console.WriteLine("[SIZE-MISMATCH]   instr[" + ii + "] op=" + instr2.OpCode +
+                                " operand=" + (instr2.Operand != null ? instr2.Operand.GetType().Name : "null") +
+                                " predictedLen=" + instrLen + " cumPredicted=" + predLen);
+                        }
+                    }
                 }
                 else
                 {
-                    Console.WriteLine("[HEAP-CHUNK] offset=" + offset + " len=" + data.Length + " type=" + chunk.GetType().Name);
+                    Console.WriteLine("[HEAP-CHUNK] offset=" + offset + " predicted=" + predictedOffset +
+                        " len=" + data.Length + " predictedLen=" + chunk.Length +
+                        " mismatch=" + sizeMismatch + " drift=" + (offset - predictedOffset) +
+                        " type=" + chunk.GetType().Name);
                 }
+                predictedOffset += chunk.Length;
                 runningOffset += (uint)data.Length;
             }
             if(dbgWriter != null)

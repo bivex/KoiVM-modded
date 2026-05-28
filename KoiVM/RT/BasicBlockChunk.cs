@@ -16,12 +16,17 @@ namespace KoiVM.RT
     {
         private readonly MethodDef method;
         private readonly NeonVMRuntime rt;
+        private uint[] instrLengths;
 
         public BasicBlockChunk(NeonVMRuntime rt, MethodDef method, ILBlock block)
         {
             this.rt = rt;
             this.method = method;
             Block = block;
+            // Save per-instruction sizes BEFORE FixupReferences
+            instrLengths = new uint[block.Content.Count];
+            for(int i = 0; i < block.Content.Count; i++)
+                instrLengths[i] = rt.serializer.ComputeLength(block.Content[i]);
             Length = rt.serializer.ComputeLength(block);
         }
 
@@ -59,10 +64,22 @@ namespace KoiVM.RT
             System.Console.WriteLine("[ENCRYPT-DBG] blockId=" + Block.Id + " EntryKey=0x" + currentKey.ToString("x8") + " method=" + method.Name);
             var firstInstr = Block.Content[0];
             var lastInstr = Block.Content[Block.Content.Count - 1];
-            foreach(var instr in Block.Content)
+            uint dataOffset = 0;
+            for(int ii = 0; ii < Block.Content.Count; ii++)
             {
-                var instrStart = instr.Offset - firstInstr.Offset;
-                var instrEnd = instrStart + rt.serializer.ComputeLength(instr);
+                var instr = Block.Content[ii];
+                var instrStart = dataOffset;
+                var savedLen = instrLengths[ii];
+                var currentLen = rt.serializer.ComputeLength(instr);
+                if(savedLen != currentLen)
+                {
+                    System.Console.WriteLine("[CHUNK-LEN-DIFF] blockId=" + Block.Id +
+                        " instr[" + ii + "] op=" + instr.OpCode +
+                        " savedLen=" + savedLen + " currentLen=" + currentLen +
+                        " operand=" + (instr.Operand != null ? instr.Operand.GetType().Name : "null") +
+                        " operandValue=" + (instr.Operand is ILImmediate ? ((ILImmediate)instr.Operand).Value.GetType().FullName + ":" + ((ILImmediate)instr.Operand).Value : "N/A"));
+                }
+                var instrEnd = instrStart + currentLen;
 
                 var multiplier = (byte)(currentKey >> 8);
 
@@ -154,6 +171,7 @@ namespace KoiVM.RT
                     var info = rt.Descriptor.Data.LookupInfo((MethodDef) callInfo.Method);
                     currentKey = info.ExitKey;
                 }
+                dataOffset += currentLen;
             }
 
             return data;

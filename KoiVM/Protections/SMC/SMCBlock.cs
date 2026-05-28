@@ -48,7 +48,15 @@ namespace KoiVM.Protections.SMC
         {
         }
 
-        uint IKoiChunk.Length => base.Length;
+        uint IKoiChunk.Length
+        {
+            get
+            {
+                int paddedLen = (int)base.Length;
+                paddedLen = (paddedLen + 15) & ~15;
+                return (uint)paddedLen;
+            }
+        }
 
         void IKoiChunk.OnOffsetComputed(uint offset)
         {

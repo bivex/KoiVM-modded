@@ -17,6 +17,13 @@ namespace KoiVM.VM
         private uint nextSigId;
         private uint nextStrId;
         private readonly Random random;
+        private byte globalOpCodeSeed;
+        internal byte globalMult;
+        internal byte globalInv;
+        private static byte sharedMult;
+        private static byte sharedInv;
+        private static byte sharedSeed;
+        private static bool initialized;
 
         internal Dictionary<IMemberRef, uint> refMap = new Dictionary<IMemberRef, uint>();
         private readonly Dictionary<MethodSig, uint> sigMap = new Dictionary<MethodSig, uint>(SignatureEqualityComparer.Instance);
@@ -33,6 +40,23 @@ namespace KoiVM.VM
             nextSigId = 8u * 1;
 
             this.random = random;
+            if(!initialized)
+            {
+                globalOpCodeSeed = (byte)random.Next();
+                globalMult = (byte)(random.Next() | 1);
+                globalInv = Entropy.ModInverse(globalMult);
+                sharedMult = globalMult;
+                sharedInv = globalInv;
+                sharedSeed = globalOpCodeSeed;
+                initialized = true;
+            }
+            else
+            {
+                globalOpCodeSeed = sharedSeed;
+                globalMult = sharedMult;
+                globalInv = sharedInv;
+            }
+            Console.WriteLine("[DATADESC-CTOR] globalMult=0x" + globalMult.ToString("x2") + " globalInv=0x" + globalInv.ToString("x2") + " globalOpCodeSeed=" + globalOpCodeSeed);
         }
 
         public uint GetId(IMemberRef memberRef)
@@ -91,19 +115,16 @@ namespace KoiVM.VM
             if(!cached)
             {
                 var seed = random.Next();
+                // All methods share the same multiplier so CALL/RET key transitions
+                // (which can only fixup byte 0) work correctly.
                 uint entryRolling = Entropy.DeriveByte(seed, (uint)method.Rid, "method_entry");
-                uint entryMult = Entropy.DeriveByte(seed, (uint)method.Rid, "method_entry_mult") | 1u;
-                uint entryInv = Entropy.ModInverse((byte)entryMult);
-
                 uint exitRolling = Entropy.DeriveByte(seed, (uint)method.Rid, "method_exit");
-                uint exitMult = Entropy.DeriveByte(seed, (uint)method.Rid, "method_exit_mult") | 1u;
-                uint exitInv = Entropy.ModInverse((byte)exitMult);
 
                 ret = new NeonVMMethodInfo
                 {
-                    EntryKey = entryRolling | (entryMult << 8) | (entryInv << 16),
-                    ExitKey = exitRolling | (exitMult << 8) | (exitInv << 16),
-                    OpCodeSeed = (byte)random.Next()
+                    EntryKey = entryRolling | ((uint)globalMult << 8) | ((uint)globalInv << 16),
+                    ExitKey = exitRolling | ((uint)globalMult << 8) | ((uint)globalInv << 16),
+                    OpCodeSeed = globalOpCodeSeed
                 };
                 methodInfos[method] = ret;
                 Console.WriteLine("[LOOKUP-NEW] method=" + method.Name + " rid=" + method.Rid +
