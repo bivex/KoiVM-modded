@@ -16,11 +16,16 @@ namespace System.Runtime.Serialization.Formatters.Execution.Internal
 
         static EHHelper()
         {
-            if(BuildInternalPreserve(typeof(Exception)))
-                return;
             var type = Type.GetType("System.Runtime.ExceptionServices.ExceptionDispatchInfo");
             if(type != null && BuildExceptionDispatchInfo(type))
                 return;
+            // BuildInternalPreserve causes NullReferenceException on Mono due to missing internal _remoteStackTraceString field.
+            // On Mono, ExceptionDispatchInfo is fully standard anyway, so this is only as a fallback.
+            if(Microsoft.VisualBasic.Devices.Platform.IsWindows)
+            {
+                if(BuildInternalPreserve(typeof(Exception)))
+                    return;
+            }
             rethrow = null;
         }
 
