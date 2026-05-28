@@ -13,7 +13,7 @@ namespace KoiVM.RT
         private readonly List<byte[]> chunks = new List<byte[]>();
         private uint currentLen;
 
-        public override string Name => "#US"; // Masking custom VM stream behind standard .NET User String stream name
+        public override string Name => "#NeonVM";
 
         public uint AddChunk(byte[] chunk)
         {
