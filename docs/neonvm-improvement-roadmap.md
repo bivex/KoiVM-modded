@@ -80,10 +80,10 @@ Key is stored as the first byte of the encrypted block, and the encryption is tr
 |---|---|---|---|
 | **P0** | AES chunk encryption (replace XOR SMC) | Medium | Breaks known-plaintext attacks |
 | **P0** | Remove plaintext key from block header | Low | Forces symbolic analysis |
-| **P1** | EH shadowing | High | Closes richest information leak |
+| **P1** | EH shadowing | High | **Done** (Shadow unwind + logic) |
 | **P1** | Opaque predicates in handlers | Medium | Slows symbolic execution exponentially |
-| **P2** | Dynamic dispatch scheduling | High | Working | Breaks trace-based attacks |
-| **P2** | Per-chunk independent entropy | Medium | Working | Prevents single-point-of-failure seed |
+| **P2** | Dynamic dispatch scheduling | High | **Done** (Per-method OpCode mapping) |
+| **P2** | Per-chunk independent entropy | Medium | **Done** (Independent keys + multipliers) |
 | **P3** | Handler relocation at runtime | High | Moves target during analysis |
 | **P3** | WASM / NativeAOT layer | Very High | Future direction, not .NET-native |
 
