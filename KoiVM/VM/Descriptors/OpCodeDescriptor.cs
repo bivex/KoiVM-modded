@@ -21,14 +21,19 @@ namespace KoiVM.VM
 
         public byte[] GetMapping(byte seed)
         {
-            var mapping = (byte[]) opCodeOrder.Clone();
+            var P_s = Enumerable.Range(0, 256).Select(x => (byte)x).ToArray();
             var random = new Random(seed);
             for (int i = 0; i < 256; i++)
             {
                 int j = random.Next(256);
-                byte temp = mapping[i];
-                mapping[i] = mapping[j];
-                mapping[j] = temp;
+                byte temp = P_s[i];
+                P_s[i] = P_s[j];
+                P_s[j] = temp;
+            }
+            var mapping = new byte[256];
+            for (int i = 0; i < 256; i++)
+            {
+                mapping[i] = P_s[opCodeOrder[i]];
             }
             return mapping;
         }

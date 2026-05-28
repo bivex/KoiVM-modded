@@ -116,6 +116,18 @@ namespace System.Runtime.Serialization.Formatters.Execution.Internal
 
         public static void Rethrow(Exception ex, string tokens)
         {
+            if (ex == null)
+            {
+                Console.WriteLine("[DEBUG-EH] ex is null!");
+            }
+            else
+            {
+                Console.WriteLine("[DEBUG-EH] Rethrowing ex: " + ex.GetType().FullName + " - " + ex.Message + "\n" + ex.StackTrace);
+                if (ex.InnerException != null)
+                {
+                    Console.WriteLine("[DEBUG-EH] Inner: " + ex.InnerException.GetType().FullName + " - " + ex.InnerException.Message + "\n" + ex.InnerException.StackTrace);
+                }
+            }
             if(tokens == null)
                 throw ex;
 

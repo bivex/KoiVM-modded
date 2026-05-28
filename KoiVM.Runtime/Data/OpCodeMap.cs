@@ -35,21 +35,23 @@ namespace System.Runtime.Serialization.Formatters.Data
             var temp_map = new IOpCode[256];
             foreach (var entry in opCodes) temp_map[entry.Key] = entry.Value;
 
-            // Replicate the shuffle logic from OpCodeDescriptor.cs
+            var P_s = new byte[256];
+            for (int i = 0; i < 256; i++) P_s[i] = (byte)i;
+
             var random = new Random(seed);
             for (int i = 0; i < 256; i++)
             {
                 int j = random.Next(256);
-                var temp = temp_map[i];
-                temp_map[i] = temp_map[j];
-                temp_map[j] = temp;
+                byte temp = P_s[i];
+                P_s[i] = P_s[j];
+                P_s[j] = temp;
             }
 
             for (int i = 0; i < 256; i++)
             {
                 if (temp_map[i] != null)
                 {
-                    map[i] = temp_map[i].Load;
+                    map[P_s[i]] = temp_map[i].Load;
                 }
             }
             return map;
