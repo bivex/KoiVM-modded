@@ -20,17 +20,13 @@ namespace KoiVM.VM
         private byte globalOpCodeSeed;
         internal byte globalMult;
         internal byte globalInv;
-        private static byte sharedMult;
-        private static byte sharedInv;
-        private static byte sharedSeed;
-        private static bool initialized;
 
         internal Dictionary<IMemberRef, uint> refMap = new Dictionary<IMemberRef, uint>();
         private readonly Dictionary<MethodSig, uint> sigMap = new Dictionary<MethodSig, uint>(SignatureEqualityComparer.Instance);
         internal List<FuncSigDesc> sigs = new List<FuncSigDesc>();
         internal Dictionary<string, uint> strMap = new Dictionary<string, uint>(StringComparer.Ordinal);
 
-        public DataDescriptor(Random random)
+        public DataDescriptor(Random random, int seed)
         {
             // 0 = null, 1 = ""
             strMap[""] = 1;
@@ -40,23 +36,9 @@ namespace KoiVM.VM
             nextSigId = 8u * 1;
 
             this.random = random;
-            if(!initialized)
-            {
-                globalOpCodeSeed = (byte)random.Next();
-                globalMult = (byte)(random.Next() | 1);
-                globalInv = Entropy.ModInverse(globalMult);
-                sharedMult = globalMult;
-                sharedInv = globalInv;
-                sharedSeed = globalOpCodeSeed;
-                initialized = true;
-            }
-            else
-            {
-                globalOpCodeSeed = sharedSeed;
-                globalMult = sharedMult;
-                globalInv = sharedInv;
-            }
-            Console.WriteLine("[DATADESC-CTOR] globalMult=0x" + globalMult.ToString("x2") + " globalInv=0x" + globalInv.ToString("x2") + " globalOpCodeSeed=" + globalOpCodeSeed);
+            globalOpCodeSeed = Entropy.DeriveByte(seed, 0, "global_opcodeseed");
+            globalMult = (byte)(Entropy.DeriveByte(seed, 0, "global_mult") | 1);
+            globalInv = Entropy.ModInverse(globalMult);
         }
 
         public uint GetId(IMemberRef memberRef)
@@ -127,14 +109,6 @@ namespace KoiVM.VM
                     OpCodeSeed = globalOpCodeSeed
                 };
                 methodInfos[method] = ret;
-                Console.WriteLine("[LOOKUP-NEW] method=" + method.Name + " rid=" + method.Rid +
-                    " EntryKey=0x" + ret.EntryKey.ToString("x8") + " OpCodeSeed=" + ret.OpCodeSeed +
-                    " seed=" + seed);
-            }
-            else if(method.Name == "INIT")
-            {
-                Console.WriteLine("[LOOKUP-CACHED-INIT] EntryKey=0x" + ret.EntryKey.ToString("x8") +
-                    " OpCodeSeed=" + ret.OpCodeSeed);
             }
             return ret;
         }

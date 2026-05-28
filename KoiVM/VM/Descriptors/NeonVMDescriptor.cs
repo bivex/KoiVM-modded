@@ -14,7 +14,7 @@ namespace KoiVM.VM
             Settings = settings;
             Architecture = new ArchDescriptor(Random);
             Runtime = new RuntimeDescriptor(Random);
-            Data = new DataDescriptor(Random);
+            Data = new DataDescriptor(Random, Settings.Seed);
         }
 
         public Random Random
@@ -45,7 +45,7 @@ namespace KoiVM.VM
 
         public void ResetData()
         {
-            Data = new DataDescriptor(Random);
+            Data = new DataDescriptor(Random, Settings.Seed);
         }
     }
 }
