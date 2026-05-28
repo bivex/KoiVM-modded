@@ -1,5 +1,7 @@
 ﻿#region
 
+using System;
+using System.Linq;
 using dnlib.DotNet;
 using dnlib.DotNet.Emit;
 
@@ -14,7 +16,19 @@ namespace KoiVM.RT.Mutation
 
         public MethodPatcher(ModuleDef rtModule)
         {
-            foreach(var entry in rtModule.Find(RTMap.NeonVMEntry, true).FindMethods(RTMap.NeonVMRun))
+            var type = rtModule.Find(RTMap.NeonVMEntry, true);
+            if (type == null)
+                type = rtModule.GetTypes().FirstOrDefault(t => t.Name == "NeonVM");
+            
+            if (type == null)
+            {
+                Console.WriteLine("[DEBUG] Types in module {0}:", rtModule.Name);
+                foreach(var t in rtModule.Types)
+                    Console.WriteLine("  - {0}", t.FullName);
+                throw new Exception("Could not find NeonVM entry type: " + RTMap.NeonVMEntry);
+            }
+
+            foreach(var entry in type.FindMethods(RTMap.NeonVMRun))
                 if(entry.Parameters.Count == 6)
                     vmEntryNormal = entry;
                 else

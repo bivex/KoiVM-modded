@@ -1,4 +1,4 @@
-﻿#region
+#region
 
 using dnlib.DotNet;
 
@@ -24,6 +24,11 @@ namespace KoiVM
         }
 
         bool DoResetPool
+        {
+            get;
+        }
+
+        bool DoStackWalk
         {
             get;
         }

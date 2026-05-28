@@ -1,4 +1,4 @@
-﻿#region
+#region
 
 using System;
 using System.Collections.Generic;
@@ -67,6 +67,12 @@ namespace KoiVM
         }
 
         public bool DoResetPool
+        {
+            get;
+            set;
+        }
+
+        public bool DoStackWalk
         {
             get;
             set;
