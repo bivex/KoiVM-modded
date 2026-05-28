@@ -131,6 +131,10 @@ namespace Microsoft.VisualBasic.Devices
                 currentCtx.Registers[NeonVMConstants.REG_BP] = new NeonVMSlot {U4 = 0};
                 currentCtx.Registers[NeonVMConstants.REG_SP] = new NeonVMSlot {U4 = (uint) arguments.Length + 1};
                 currentCtx.Registers[NeonVMConstants.REG_IP] = new NeonVMSlot {U8 = codeAddr};
+                Console.WriteLine("[LOAD-SETUP] KoiSection=0x" + ((long)Data.KoiSection).ToString("x") +
+                    " codeAddr=0x" + codeAddr.ToString("x") +
+                    " offset=0x" + (codeAddr - (ulong)Data.KoiSection).ToString("x") +
+                    " key=0x" + key.ToString("x8") + " opSeed=" + opSeed);
                 ObjectPool.Load(currentCtx);
                 Debug.Assert(currentCtx.EHStack.Count == 0);
 

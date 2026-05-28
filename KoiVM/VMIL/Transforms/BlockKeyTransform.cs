@@ -24,7 +24,12 @@ namespace KoiVM.VMIL.Transforms
         {
             runtime = tr.Runtime;
             methodInfo = tr.Runtime.Descriptor.Data.LookupInfo(tr.Method);
+            Console.WriteLine("[BLOCKKEY-INIT] method=" + tr.Method.Name + " EntryKey=0x" + methodInfo.EntryKey.ToString("x8"));
             ComputeBlockKeys(tr.RootScope);
+            // Dump final keys
+            foreach(var kv in Keys)
+                Console.WriteLine("[BLOCKKEY-FINAL] blockId=" + kv.Key.Id + " method=" + tr.Method.Name +
+                    " Entry=0x" + kv.Value.Entry.ToString("x8") + " Exit=0x" + kv.Value.Exit.ToString("x8"));
         }
 
         public void Transform(ILPostTransformer tr)
@@ -40,11 +45,18 @@ namespace KoiVM.VMIL.Transforms
         private void ComputeBlockKeys(ScopeBlock rootScope)
         {
             var blocks = rootScope.GetBasicBlocks().OfType<ILBlock>().ToList();
+            Console.WriteLine("[BLOCKKEY] blocks=" + blocks.Count);
             uint id = 1;
             Keys = blocks.ToDictionary(
                 block => block,
                 block => new BlockKey {Entry = id++, Exit = id++});
             var ehMap = MapEHs(rootScope);
+
+            // Log initial state
+            for(int bi = 0; bi < blocks.Count; bi++)
+                Console.WriteLine("[BLOCKKEY-INITIAL] [" + bi + "] blockId=" + blocks[bi].Id +
+                    " sources=" + blocks[bi].Sources.Count + " targets=" + blocks[bi].Targets.Count +
+                    " Entry=0x" + Keys[blocks[bi]].Entry.ToString("x8") + " Exit=0x" + Keys[blocks[bi]].Exit.ToString("x8"));
 
             bool updated;
             do

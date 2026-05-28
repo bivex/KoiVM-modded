@@ -167,9 +167,22 @@ namespace KoiVM.RT
         private void ComputeOffsets()
         {
             uint offset = 0;
-            foreach(var chunk in finalChunks)
+            for(int ci = 0; ci < finalChunks.Count; ci++)
             {
+                var chunk = finalChunks[ci];
                 chunk.OnOffsetComputed(offset);
+                var bbChunk = chunk as BasicBlockChunk;
+                if(bbChunk != null)
+                {
+                    var firstOffset = bbChunk.Block.Content[0].Offset;
+                    Console.WriteLine("[COMPUTE-OFFSETS] [" + ci + "] offset=" + offset + " len=" + chunk.Length +
+                        " blockId=" + bbChunk.Block.Id + " Content[0].Offset=" + firstOffset);
+                }
+                else
+                {
+                    Console.WriteLine("[COMPUTE-OFFSETS] [" + ci + "] offset=" + offset + " len=" + chunk.Length +
+                        " type=" + chunk.GetType().Name);
+                }
                 offset += chunk.Length;
             }
         }
@@ -203,7 +216,7 @@ namespace KoiVM.RT
                         data[0].ToString("x2") + " " + data[1].ToString("x2") + " " + data[2].ToString("x2") + " " + data[3].ToString("x2") :
                         data[0].ToString("x2");
                     Console.WriteLine("[HEAP-CHUNK] offset=" + offset + " len=" + data.Length +
-                        " blockId=" + bbChunk.Block.Id + " method=" + bbChunk.Block.GetHashCode() +
+                        " blockId=" + bbChunk.Block.Id + " Content0Offset=" + bbChunk.Block.Content[0].Offset +
                         " first4=" + first4);
                 }
                 else

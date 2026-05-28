@@ -50,12 +50,13 @@ namespace KoiVM.RT
             return Encrypt(stream.ToArray());
         }
 
+        private static int encryptByteCounter = 0;
         private byte[] Encrypt(byte[] data)
         {
             var blockKey = rt.Descriptor.Data.LookupInfo(method).BlockKeys[Block];
             var currentKey = blockKey.EntryKey;
 
-            System.Console.WriteLine("[ENCRYPT-DBG] EntryKey=0x" + currentKey.ToString("x8") + " raw0=" + data[0] + " method=" + method.Name);
+            System.Console.WriteLine("[ENCRYPT-DBG] blockId=" + Block.Id + " EntryKey=0x" + currentKey.ToString("x8") + " method=" + method.Name);
             var firstInstr = Block.Content[0];
             var lastInstr = Block.Content[Block.Content.Count - 1];
             foreach(var instr in Block.Content)
@@ -67,13 +68,27 @@ namespace KoiVM.RT
 
                 // Encrypt OpCode
                 {
+                    var keyBefore = currentKey;
                     var b = data[instrStart];
                     data[instrStart] ^= (byte)currentKey;
+                    if(encryptByteCounter < 200)
+                    {
+                        System.Console.WriteLine("[ENCRYPT] #" + encryptByteCounter +
+                            " blockId=" + Block.Id +
+                            " off=" + instrStart +
+                            " op=" + instr.OpCode +
+                            " keyBefore=0x" + keyBefore.ToString("x8") +
+                            " enc=0x" + data[instrStart].ToString("x2") +
+                            " plain=0x" + b.ToString("x2") +
+                            "(" + b + ")");
+                    }
                     currentKey = (currentKey & 0xFFFFFF00) | (byte) ((byte)currentKey * multiplier + b);
-                }
-                // ... rest unchanged - but let me add post-encrypt dump
-                if (instr == firstInstr) {
-                    System.Console.WriteLine("[ENCRYPT-POST] enc[0]=" + data[instrStart].ToString("x2") + " method=" + method.Name);
+                    if(encryptByteCounter < 200)
+                    {
+                        System.Console.WriteLine("[ENCRYPT] #" + encryptByteCounter +
+                            " keyAfter=0x" + currentKey.ToString("x8"));
+                        encryptByteCounter++;
+                    }
                 }
 
                 uint? fixupTarget = null;
@@ -98,15 +113,37 @@ namespace KoiVM.RT
                 {
                     var invMultiplier = (byte)(currentKey >> 16);
                     var fixup = CalculateFixupByte(fixupTarget.Value, data, currentKey, instrStart + 1, instrEnd, multiplier, invMultiplier);
+                    System.Console.WriteLine("[FIXUP] blockId=" + Block.Id + " off=" + (instrStart+1) +
+                        " target=0x" + fixupTarget.Value.ToString("x8") +
+                        " currentKey=0x" + currentKey.ToString("x8") +
+                        " fixup=0x" + fixup.ToString("x2") +
+                        " op=" + instr.OpCode);
                     data[instrStart + 1] = fixup;
                 }
 
                 // Encrypt rest of instruction
                 for(var i = instrStart + 1; i < instrEnd; i++)
                 {
+                    var keyBefore = currentKey;
                     var b = data[i];
                     data[i] ^= (byte)currentKey;
+                    if(encryptByteCounter < 200)
+                    {
+                        System.Console.WriteLine("[ENCRYPT] #" + encryptByteCounter +
+                            " blockId=" + Block.Id +
+                            " off=" + i +
+                            " keyBefore=0x" + keyBefore.ToString("x8") +
+                            " enc=0x" + data[i].ToString("x2") +
+                            " plain=0x" + b.ToString("x2") +
+                            "(" + b + ")");
+                    }
                     currentKey = (currentKey & 0xFFFFFF00) | (byte) ((byte)currentKey * multiplier + b);
+                    if(encryptByteCounter < 200)
+                    {
+                        System.Console.WriteLine("[ENCRYPT] #" + encryptByteCounter +
+                            " keyAfter=0x" + currentKey.ToString("x8"));
+                        encryptByteCounter++;
+                    }
                 }
                 if(fixupTarget != null)
                     Debug.Assert((uint)currentKey == fixupTarget.Value);
